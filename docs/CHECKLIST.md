@@ -13,11 +13,11 @@ Use this checklist to make sure you have completed every part of the assignment.
 
 ## Part 2 — Get it running
 
-- [ ] Cloned the repo and opened it in VS Code
-- [ ] Ran `npm install` successfully
-- [ ] Ran `npm run dev` — Vite started without errors
-- [ ] Ran `npm run lint` — passed with no errors
-- [ ] Made a test commit and confirmed Husky ran lint-staged
+- [x] Cloned the repo and opened it in VS Code
+- [x] Ran `npm install` successfully
+- [x] Ran `npm run dev` — Vite started without errors
+- [x] Ran `npm run lint` — passed with no errors
+- [x] Made a test commit and confirmed Husky ran lint-staged
 
 ## Part 3 — Build the site
 
