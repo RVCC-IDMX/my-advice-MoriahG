@@ -1,24 +1,101 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>My Advice</title>
+    <title>What Pet Should I Get?</title>
+    <!-- Google Fonts -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Nunito:wght@700&display=swap"
+      rel="stylesheet"
+    />
     <link rel="stylesheet" href="/src/css/style.css" />
   </head>
   <body>
-    <header>
-      <h1>My advice</h1>
+    <header class="site-header">
+      <nav class="main-nav" aria-label="Main navigation">
+        <h1 class="site-title">What Pet Should I Get?</h1>
+      </nav>
+      <section class="filter-bar" aria-label="Pet filters">
+        <form id="filterForm" autocomplete="off">
+          <div class="filter-group">
+            <label for="classSelect">Class</label>
+            <select id="classSelect" name="class">
+              <option value="">Any</option>
+              <!-- options populated by JS -->
+            </select>
+          </div>
+          <div class="filter-group">
+            <label for="speciesSelect">Species</label>
+            <select id="speciesSelect" name="species">
+              <option value="">Any</option>
+              <!-- options populated by JS -->
+            </select>
+          </div>
+          <div class="filter-group">
+            <label for="breedSelect">Breed</label>
+            <select id="breedSelect" name="breed">
+              <option value="">Any</option>
+              <!-- options populated by JS -->
+            </select>
+          </div>
+          <button
+            type="button"
+            id="moreFiltersBtn"
+            aria-expanded="false"
+            aria-controls="moreFiltersDrawer"
+          >
+            More Filters
+            <span class="hamburger-icon-wrapper"
+              ><img
+                src="/src/images/hamburger.svg"
+                alt="Open more filters"
+                width="20"
+                height="20"
+                class="hamburger-icon"
+            /></span>
+          </button>
+          <div
+            class="view-toggle"
+            role="group"
+            aria-label="Toggle results view"
+          >
+            <button id="gridViewBtn" aria-pressed="true" aria-label="Grid view">
+              <img
+                src="/src/images/grid.svg"
+                alt="Grid view icon"
+                width="24"
+                height="24"
+              />
+            </button>
+            <button
+              id="listViewBtn"
+              aria-pressed="false"
+              aria-label="List view"
+            >
+              <img
+                src="/src/images/list.svg"
+                alt="List view icon"
+                width="24"
+                height="24"
+              />
+            </button>
+          </div>
+        </form>
+        <div id="activeFilters" class="active-filters" aria-live="polite"></div>
+        <aside id="moreFiltersDrawer" class="drawer" aria-hidden="true">
+          <!-- More filters populated by JS -->
+        </aside>
+      </section>
     </header>
-
-    <main>
-      <p id="message"></p>
+    <main id="mainContent">
+      <section id="resultsSection" aria-live="polite">
+        <!-- Results rendered by JS -->
+      </section>
     </main>
-
-    <footer>
-      <p>&copy; 2026</p>
+    <footer class="site-footer">
+      <p>&copy; 2026 Moriah Guretse</p>
     </footer>
-
     <script type="module" src="/src/js/app.js"></script>
   </body>
 </html>

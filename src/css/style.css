@@ -1,12 +1,17 @@
-/* Custom properties — use hsl() for all colors */
+/* Custom properties — playful palette, all hsl() */
+/* 1. Custom Properties & Reset */
 :root {
-  --color-text: hsl(220, 15%, 20%);
-  --color-bg: hsl(220, 15%, 97%);
-  --color-accent: hsl(220, 70%, 50%);
-  --color-muted: hsl(220, 10%, 60%);
+  --color-primary: hsl(79, 74%, 68%); /* Soft Lime #a9e64c */
+  --color-secondary: hsl(0, 0%, 100%); /* Light Blue #E0F2FE */
+  --color-accent: hsl(47, 100%, 66%); /* Sunny Yellow #FACC15 */
+  --color-bg: hsl(188, 80%, 84%); /* Off-White #F8F9FA */
+  --color-text: hsl(220, 12%, 15%); /* Dark Charcoal #343A40 */
+  --color-muted: hsl(0, 0%, 73%);
+  --radius: 12px;
+  --radius-sm: 8px;
+  --focus: 0 0 0 3px hsla(43, 100%, 60%, 0.61);
 }
 
-/* Reset */
 *,
 *::before,
 *::after {
@@ -15,35 +20,514 @@
   padding: 0;
 }
 
-/* Base */
 body {
-  font-family: system-ui, -apple-system, sans-serif;
+  font-family: 'Nunito', Arial, sans-serif;
   color: var(--color-text);
-  background-color: var(--color-bg);
+  background: var(--color-bg);
   line-height: 1.6;
   min-height: 100dvh;
   display: flex;
   flex-direction: column;
 }
 
-main {
-  flex: 1;
-  padding: 2rem 1rem;
-  max-width: 40rem;
-  margin: 0 auto;
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: 'Nunito', Arial, sans-serif;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+/* 2. Layout Containers */
+.site-header {
+  background: var(--color-primary);
+  padding: 1.5rem 1rem 0.5rem 1rem;
+  box-shadow: 0 2px 8px 0 hsl(222, 5%, 46%);
+}
+.main-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+.site-title {
+  font-size: 2.2rem;
+  margin-bottom: 0.5rem;
+  letter-spacing: 0.01em;
+}
+
+/* 3. Header & Navigation */
+.view-toggle {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  margin-left: 1.2em;
+}
+.view-toggle button {
+  background: var(--color-secondary);
+  border: 2px solid var(--color-accent);
+  border-radius: var(--radius-sm);
+  padding: 0.3em 0.5em;
+  cursor: pointer;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
+  display: flex;
+  align-items: center;
+}
+.view-toggle button[aria-pressed='true'] {
+  background: var(--color-accent);
+}
+.view-toggle button:focus {
+  outline: none;
+  box-shadow: var(--focus);
+}
+
+/* 4. Filter Bar & Form */
+.filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem 2rem;
+  align-items: flex-start;
+  background: var(--color-secondary);
+  border-radius: var(--radius);
+  box-shadow: 0 1px 4px 0 hsl(220, 10%, 80%, 0.08);
+  padding: 1.5rem 1.5rem 1rem 1.5rem;
+  margin: 1.5rem 0 0 0;
+  position: relative;
+  align-content: space-evenly;
+}
+#filterForm {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.2rem 2rem;
+  align-items: flex-end;
   width: 100%;
 }
-
-header {
-  padding: 1.5rem 1rem;
-  text-align: center;
+#filterForm > .view-toggle {
+  margin-left: auto;
+  align-self: flex-end;
+}
+/* Improved filter-group for label/select alignment */
+.filter-group {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.6em;
+  min-width: 0;
+  width: auto;
+}
+.filter-group label {
+  font-size: 1em;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.filter-group select {
+  min-width: 120px;
+  max-width: 220px;
+  width: auto;
+  box-sizing: border-box;
+}
+.filter-group select[multiple] {
+  min-height: 6rem;
+  overflow-y: auto;
+}
+/* Stack label/select vertically on very small screens */
+@media (max-width: 420px) {
+  .filter-group {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.2em;
+    width: 100%;
+  }
+  .filter-group select {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+  }
+}
+.active-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.2rem 0;
+  background: transparent;
+}
+.filter-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.3rem 0.65rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-muted);
+  background: var(--color-secondary);
+  color: var(--color-text);
+  font-weight: 700;
+  font-size: 0.9rem;
+  box-shadow: 0 1px 3px 0 hsla(220, 10%, 80%, 0.4);
+}
+.filter-pill {
+  background: var(--color-accent);
+}
+.filter-pill-classId {
+  background: hsl(51, 100%, 71%);
+}
+.filter-pill-speciesId {
+  background: hsl(31, 100%, 65%);
+}
+.filter-pill-breedId {
+  background: hsl(200, 100%, 78%);
+}
+.filter-pill .remove-filter {
+  border: none;
+  background: transparent;
+  color: var(--color-text);
+  padding: 0;
+  width: auto;
+  height: auto;
+  font-weight: 900;
+  font-size: 1.1rem;
+  cursor: pointer;
+}
+.filter-pill .remove-filter:focus,
+.filter-pill .remove-filter:hover {
+  color: rgb(156, 13, 13);
+}
+/* Consolidated #moreFiltersBtn styles */
+#moreFiltersBtn {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  background: var(--color-accent);
+  color: var(--color-text);
+  border: none;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 0.5em 1.2em;
+  border-radius: var(--radius);
+  box-shadow: 0 1px 4px 0 hsl(48, 97%, 63%, 0.08);
+  margin-left: 0.5em;
+  margin-bottom: 0.2em;
+  justify-content: space-between;
+}
+#moreFiltersBtn:focus {
+  box-shadow: var(--focus);
+}
+.hamburger-icon-wrapper {
+  height: 1.3em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 0.7em;
+  transition:
+    transform 0.3s cubic-bezier(0.4, 2, 0.6, 1),
+    background 0.2s;
+}
+#moreFiltersBtn[aria-expanded='true'] .hamburger-icon-wrapper {
+  transform: rotate(90deg);
+}
+.remove-filter:focus {
+  outline: none;
+  background: var(--color-primary);
+  box-shadow: var(--focus);
 }
 
-footer {
+select,
+button,
+input {
+  border-radius: var(--radius-sm);
+  border: 1.5px solid var(--color-muted);
+  padding: 0.5em 1.1em;
+  font-size: 1rem;
+  background: var(--color-secondary);
+  color: var(--color-text);
+  margin-bottom: 0.2em;
+}
+.checkbox-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin-right: 0.75rem;
+  margin-bottom: 0.3rem;
+  color: var(--color-text);
+  font-size: 0.95rem;
+}
+.checkbox-label input {
+  width: 1rem;
+  height: 1rem;
+}
+label {
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--color-text);
+}
+.drawer {
+  position: absolute;
+  left: 0;
+  top: 100%;
+  min-width: 340px;
+  max-width: 480px;
+  width: 100%;
+  background: var(--color-secondary);
+  border-radius: var(--radius);
+  box-shadow: 0 4px 16px 0 hsl(220, 10%, 80%, 0.12);
+  padding: 1.2rem 1.5rem;
+  z-index: 10;
+  display: none;
+  gap: 2rem 1.5em;
+  align-items: start;
+}
+.drawer fieldset {
+  border: none;
+  padding: 0;
+  margin: 0;
+}
+.drawer fieldset legend {
+  font-size: 0.95rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+.drawer[aria-hidden='false'] {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  align-items: start;
+}
+.drawer .filter-group {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.5em;
+  margin-bottom: 1rem;
+}
+.drawer .filter-group label {
+  margin-bottom: 0;
+  margin-right: 0;
+  font-weight: 700;
+}
+.drawer .filter-group select {
+  width: 100%;
+  margin-bottom: 0.6em;
+  margin-right: 0;
+}
+.drawer .filter-dropdown {
+  background: hsla(210, 20%, 96%, 1);
+  border: 1px solid hsl(210, 20%, 92%);
+  border-radius: var(--radius-sm);
+  padding: 0.5rem;
+}
+.drawer .filter-dropdown summary {
+  list-style: none;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 700;
+  padding: 0.4rem 0.2rem;
+}
+.drawer .filter-dropdown summary::marker {
+  display: none;
+}
+.drawer .filter-dropdown summary::after {
+  content: '▾';
+  font-size: 0.8rem;
+  margin-left: 0.6rem;
+}
+.drawer .filter-dropdown[open] summary::after {
+  content: '▴';
+}
+.drawer .dropdown-options {
+  display: grid;
+  gap: 0.35rem;
+  padding-top: 0.5rem;
+}
+.drawer .dropdown-options label {
+  font-weight: 400;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.drawer .dropdown-options input[type='checkbox'] {
+  accent-color: var(--color-primary);
+}
+
+/* 5. Main Content & Results */
+#mainContent {
+  flex: 1;
+  width: 100%;
+  max-width: 60rem;
+  margin: 0 auto;
+  padding: 2rem 1rem 2rem 1rem;
+}
+#resultsSection {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.3rem;
+  margin-top: 1.2rem;
+}
+
+.pet-info {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  padding: 0.85rem;
+}
+.pet-title-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.35rem;
+  margin-bottom: 0.25rem;
+}
+.pet-info h2 {
+  font-size: 1.15rem;
+  margin: 0 0 0.2rem 0;
+}
+.pet-subtitle {
+  font-size: 0.92rem;
+  color: var(--color-text);
+  opacity: 0.88;
+}
+.pet-details {
+  display: grid;
+  gap: 0.35rem;
+}
+.pet-detail-row {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.5rem;
+  padding: 0.25rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+.pet-detail-row:last-child {
+  border-bottom: none;
+}
+.pet-detail-label {
+  min-width: 5.5rem;
+  font-size: 0.92rem;
+  font-weight: 800;
+  color: var(--color-text);
+}
+.pet-detail-value {
+  flex: 1;
+  font-size: 0.92rem;
+  font-weight: 400;
+  color: var(--color-text);
+  opacity: 0.85;
+  text-align: left;
+}
+
+.pet-card {
+  background: var(--color-secondary);
+  border-radius: var(--radius);
+  box-shadow: 0 2px 8px 0 hsl(220, 10%, 80%, 0.1);
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  transition: box-shadow 0.2s;
+}
+.pet-card:focus-within {
+  box-shadow: 0 0 0 4px var(--color-accent);
+}
+.pet-card img {
+  width: 100%;
+  aspect-ratio: 1/1;
+  object-fit: cover;
+  display: block;
+  border-radius: var(--radius) var(--radius) 0 0;
+  margin: 0;
+  background: var(--color-bg);
+}
+
+/* 6. List View (applied by JS) */
+#resultsSection.list-view {
+  display: block;
+}
+#resultsSection.list-view .pet-card {
+  flex-direction: row;
+  align-items: center;
+  gap: 1.25rem;
+  margin-bottom: 1.5rem;
+  max-width: 100%;
+  padding: 0.9rem;
+}
+#resultsSection.list-view .pet-card .pet-info {
+  flex: 1;
+  padding: 0.25rem 0;
+  justify-content: center;
+}
+#resultsSection.list-view .pet-card img {
+  width: 120px;
+  height: 120px;
+  aspect-ratio: 1/1;
+  object-fit: cover;
+  border-radius: var(--radius);
+  margin: 0 1.25rem 0 0;
+}
+#resultsSection.list-view .pet-card .pet-detail-row {
+  padding: 0.15rem 0;
+}
+
+/* 7. Footer */
+.site-footer {
+  background: var(--color-primary);
+  color: var(--color-text);
   padding: 1rem;
   text-align: center;
-  color: var(--color-muted);
-  font-size: 0.875rem;
+  font-size: 0.95rem;
+  margin-top: 2rem;
 }
 
-/* Mobile-first — add min-width queries as needed */
+/* 8. Utilities & Focus Styles */
+/* Grouped transition and focus styles for interactive elements */
+a,
+button,
+select,
+input {
+  transition:
+    box-shadow 0.2s,
+    border-color 0.2s;
+}
+
+/* Focus utility for accessibility and consistent outline behavior */
+.focus-outline,
+a:focus-visible,
+button:focus-visible,
+select:focus-visible,
+input:focus-visible {
+  outline: none;
+  box-shadow: var(--focus);
+  border-color: var(--color-accent);
+}
+
+/* 9. Responsive: min-width for larger screens */
+@media (min-width: 600px) {
+  .filter-bar,
+  #filterForm {
+    gap: 2rem;
+  }
+  .site-header {
+    padding-left: 2.5rem;
+    padding-right: 2.5rem;
+  }
+  #mainContent {
+    padding-left: 2.5rem;
+    padding-right: 2.5rem;
+  }
+}
+@media (min-width: 900px) {
+  .site-title {
+    font-size: 2.7rem;
+  }
+  #resultsSection {
+    gap: 2.5rem;
+  }
+}

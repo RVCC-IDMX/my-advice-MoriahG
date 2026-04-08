@@ -1,5 +1,0 @@
-# Why this file exists
-#
-# Git does not track empty directories. This .gitkeep file is a convention
-# (not a Git feature) that forces Git to include the folder in the repo.
-# Once you add a real file here, you can delete .gitkeep.

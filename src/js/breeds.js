@@ -1,0 +1,130 @@
+// src/js/breeds.js
+// Specific breeds, linked to speciesId, with detailed properties
+// Sample data for demo purposes
+
+export const breeds = [
+  {
+    id: 'b1',
+    name: 'Golden Retriever',
+    speciesId: 's1',
+    lifeSpan: [10, 12],
+    size: 'large',
+    cost: { initial: [1000, 2000], adoption: [150, 500], monthly: [100, 150] },
+    habitat: {
+      housing: ['apartment', 'house'],
+      space: 'large',
+      climate: ['temperate', 'cold'],
+    },
+    care: {
+      social: 'highlySocial',
+      grooming: 'moderate',
+      exercise: 'veryHigh',
+      training: 'easy',
+    },
+    temperament: ['friendly', 'loyal', 'active'],
+    goodWithChildren: true,
+    goodWithOtherPets: true,
+    image:
+      'https://cdn.pixabay.com/photo/2019/06/26/20/42/golden-retriever-4301212_1280.jpg',
+    imageAlt: 'A Golden Retriever with its tongue sticking out',
+  },
+  {
+    id: 'b2',
+    name: 'Siamese',
+    speciesId: 's2',
+    lifeSpan: [12, 16],
+    size: 'small',
+    cost: { initial: [600, 1200], adoption: [100, 250], monthly: [50, 80] },
+    habitat: {
+      housing: ['apartment', 'house', 'farm'],
+      space: 'medium',
+      climate: ['warm', 'temperate'],
+    },
+    care: {
+      social: 'social',
+      grooming: 'low',
+      exercise: 'moderate',
+      training: 'moderate',
+    },
+    temperament: ['vocal', 'curious', 'affectionate'],
+    goodWithChildren: true,
+    goodWithOtherPets: true,
+    image: 'https://cdn.pixabay.com/photo/2015/08/09/19/02/cat-882049_1280.jpg',
+    imageAlt: 'A Siamese cat with blue eyes',
+  },
+  {
+    id: 'b3',
+    name: 'American Budgie',
+    speciesId: 's3',
+    lifeSpan: [5, 15],
+    size: 'small',
+    cost: { initial: [10, 75], adoption: [20, 60], monthly: [20, 50] },
+    habitat: {
+      housing: ['cage'],
+      space: 'small',
+      climate: ['temperate', 'warm'],
+    },
+    care: {
+      social: 'social',
+      grooming: 'low',
+      exercise: 'moderate',
+      training: 'moderate',
+    },
+    temperament: ['talkative', 'playful', 'friendly'],
+    goodWithChildren: true,
+    goodWithOtherPets: null,
+    image:
+      'https://cdn.pixabay.com/photo/2020/01/17/16/02/budgie-4773298_1280.jpg',
+    imageAlt: 'Two yellow and green American budgies on someones open hand',
+  },
+  {
+    id: 'b4',
+    name: 'Holland Lop',
+    speciesId: 's4',
+    lifeSpan: [7, 10],
+    size: 'small',
+    cost: { initial: [120, 220], adoption: [40, 80], monthly: [20, 40] },
+    habitat: {
+      housing: ['enclosure', 'farm'],
+      space: 'medium',
+      climate: ['temperate'],
+    },
+    care: {
+      social: 'social',
+      grooming: 'moderate',
+      exercise: 'moderate',
+      training: 'easy',
+    },
+    temperament: ['gentle', 'friendly', 'curious'],
+    goodWithChildren: true,
+    goodWithOtherPets: null,
+    image:
+      'https://cdn.pixabay.com/photo/2019/07/22/16/55/rabbit-4355563_1280.jpg',
+    imageAlt: 'A light brown Holland Lop rabbit sitting quietly',
+  },
+  {
+    id: 'b6',
+    name: 'Comet Goldfish',
+    speciesId: 's6',
+    lifeSpan: [5, 10],
+    size: 'small',
+    cost: { initial: [15, 50], adoption: [5, 15], monthly: [10, 20] },
+    habitat: {
+      housing: ['aquarium'],
+      space: 'small',
+      climate: ['temperate'],
+    },
+    care: {
+      social: 'solitary',
+      grooming: 'none',
+      exercise: 'low',
+      training: 'easy',
+    },
+    temperament: ['peaceful', 'easygoing'],
+    goodWithChildren: true,
+    goodWithOtherPets: null,
+    image:
+      'https://cdn.pixabay.com/photo/2012/01/06/01/17/veiltail-11453_1280.jpg',
+    imageAlt: 'A comet goldfish',
+  },
+];
