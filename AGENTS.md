@@ -52,12 +52,18 @@ JavaScript student, post-midterm. Knows: `const`/`let`, template literals, `if/e
 ### Files
 
 ```
-src/js/data.js       ← dataset only
-src/js/matching.js   ← logic, no DOM
+src/js/classes.js    ← dataset only
+src/js/species.js    ← dataset only
+src/js/breeds.js     ← dataset only
+src/js/filters.js    ← logic, no DOM
 src/js/app.js        ← DOM wiring only
 src/css/style.css    ← all styles
 ```
 
 ## My personal instructions
 
-_(Add your own here — what helps you learn, what you want the agent to always or never do, context about your project.)_
+When implimenting code fixes or making new changes, ensure there is no repeated and redundant code. If there is, suggest a way to refactor the code or remove the unneeded code before making changes and adding code.
+
+Ensure each visual element of the code displays properly in various view port sizes and is responsively compatible with the media queries.
+
+For every new function, add JSDoc comments to explain the purpose, parameters, and return value. If the function is lengthly and complex, add a few brief comments when necessary to clarify the logic and/or syntax.

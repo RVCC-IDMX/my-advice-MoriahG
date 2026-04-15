@@ -29,10 +29,10 @@ Use this checklist to make sure you have completed every part of the assignment.
 
 ## Part 4 — Modify your AGENTS.md
 
-- [ ] Read `docs/a-good-agents-md.md`
-- [ ] Added at least 3 personal instructions to AGENTS.md
-- [ ] Tested the instructions in a short agent conversation
-- [ ] Noted what changed in the agent's behavior
+- [x] Read `docs/a-good-agents-md.md`
+- [x] Added at least 3 personal instructions to AGENTS.md
+- [x] Tested the instructions in a short agent conversation
+- [x] Noted what changed in the agent's behavior
 
 ## Part 5 — Deploy and reflect
 

@@ -1,3 +1,27 @@
+/**
+ * Updates the summary labels for all multi-select filter groups in the more filters drawer.
+ * Ensures the summary reflects the currently checked options after programmatic changes.
+ */
+function updateFilterGroupSummaries() {
+  multiFilterNames.forEach((key) => {
+    // Find the details element that contains a checkbox with name=key
+    const details = Array.from(
+      moreFiltersDrawer.querySelectorAll('details.filter-dropdown')
+    ).find((d) => d.querySelector(`input[name="${key}"]`));
+    if (!details) return;
+    const summary = details.querySelector('summary');
+    if (!summary) return;
+    const checked = Array.from(
+      details.querySelectorAll(`input[name="${key}"]:checked`)
+    ).map((checkbox) => checkbox.parentElement.textContent.trim());
+    const filterObj = drawerFilters.find((f) => f.name === key);
+    if (checked.length && filterObj) {
+      summary.textContent = `${filterObj.label}: ${checked.join(', ')}`;
+    } else if (filterObj) {
+      summary.textContent = filterObj.label;
+    }
+  });
+}
 // Import data and logic modules (all local, no async)
 import { classes } from './classes.js';
 import { species } from './species.js';
@@ -538,6 +562,7 @@ function removeFilter(key, value) {
 
   renderActiveFilters();
   highlightSelectedFilters();
+  updateFilterGroupSummaries();
   renderResults();
 }
 
