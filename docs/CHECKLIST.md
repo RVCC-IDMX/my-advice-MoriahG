@@ -36,11 +36,11 @@ Use this checklist to make sure you have completed every part of the assignment.
 
 ## Part 5 — Deploy and reflect
 
-- [ ] Ran `npm run build` successfully
-- [ ] Deployed to Netlify
-- [ ] Pushed to GitHub
-- [ ] GitHub Actions lint workflow shows a green check
-- [ ] Completed `ai-collaboration-summary-template.md`
+- [x] Ran `npm run build` successfully
+- [x] Deployed to Netlify
+- [x] Pushed to GitHub
+- [x] GitHub Actions lint workflow shows a green check
+- [x] Completed `ai-collaboration-summary-template.md`
 
 ## Files to submit
 

@@ -4,22 +4,9 @@ This repo gives you a fully configured professional tooling setup. Your job is t
 
 The tooling is already here — linting, formatting, pre-commit hooks, CI, and a dev server. You bring the site.
 
-## Getting started
+## Netlify link
 
-```bash
-npm install
-npm run dev
-```
-
-After `npm install`, Husky sets up pre-commit hooks automatically. Running `npm run dev` starts the Vite dev server — you should see a placeholder page in the browser.
-
-## Learning objectives
-
-- Set up and work inside a professional JavaScript tooling harness
-- Understand what linting and formatting do and why teams use them
-- Experience pre-commit quality gates that catch problems before they reach GitHub
-- Read and understand a CI workflow with GitHub Actions
-- Use an AI agent conversation to plan and generate a complete site from a build prompt
+<https://what-pet-should-i-get.netlify.app> 
 
 ## File guide
 
@@ -46,9 +33,3 @@ Your docs folder has everything you need:
 - [docs/planning-conversation-guide.md](docs/planning-conversation-guide.md) — planning guide used in Part 1 (also available as a [gist](https://gist.github.com/cynthiateeters/b2aa58e6f6c67fb2400309c8543febc5))
 - [docs/course/how-agents-md-and-reflections-work.md](docs/course/how-agents-md-and-reflections-work.md) — how AGENTS.md and weekly reflections work across the project
 - [docs/course/weekly-updates-how-it-works.md](docs/course/weekly-updates-how-it-works.md) — how you receive weekly instruction updates via GitHub PRs
-
-## Where your site lives
-
-The `src/` folder is where your generated site's code will go. Your AI agent conversation will create files like `src/js/data.js`, `src/js/matching.js`, and `src/js/app.js`, plus `src/css/style.css` for your styles.
-
-A placeholder `index.html` is included so the project builds and runs from the start. Your AI agent conversation will replace it with your real site.
