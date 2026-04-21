@@ -1,49 +1,52 @@
-# Completion checklist
+# Completion checklist — Week 2: DOM Fundamentals
 
 Use this checklist to make sure you have completed every part of the assignment. Each item should be a clear yes or no.
 
-## Part 1 — Plan your site with your agent
+## Part 1 — Read your code
 
-- [x] Opened original "What Should I...?" repo in VS Code
-- [x] Started a Copilot agent conversation (in the original repo, not this one) with the planning guide gist
-- [x] Agent's first response referenced specific files and content from the repo
-- [x] Had a back-and-forth planning conversation (not just one message)
-- [x] Produced a `BUILD-PROMPT.md` file
-- [x] Copied `BUILD-PROMPT.md` into this repo
+- [ ] Updated AGENTS.md "About this student" section before starting (start-of-week ritual)
+- [ ] Ran `npm run dev` and confirmed site loads
+- [ ] Read `src/js/app.js` top to bottom — can explain what each function does
+- [ ] Read `src/js/matching.js` — can explain the logic
+- [ ] Read `src/js/data.js` — know the shape and count of your data
+- [ ] Tried `document.querySelector()` in the browser console
 
-## Part 2 — Get it running
+## Part 2 — Modernize your code
 
-- [x] Cloned the repo and opened it in VS Code
-- [x] Ran `npm install` successfully
-- [x] Ran `npm run dev` — Vite started without errors
-- [x] Ran `npm run lint` — passed with no errors
-- [x] Made a test commit and confirmed Husky ran lint-staged
+- [ ] Replaced every `getElementById` with `querySelector` (using CSS selector syntax)
+- [ ] Replaced every data-driven `innerHTML` with `createElement` + `textContent`
+- [ ] Any remaining `innerHTML` has a comment explaining why it is safe
+- [ ] Site still works after changes — form submits, results display
+- [ ] Ran `npm run lint` and fixed any errors
+- [ ] Updated `docs/error-log.md` with any errors encountered
 
-## Part 3 — Build the site
+## Part 3 — DOM experiments
 
-- [x] Pasted build prompt into an agent conversation in this repo
-- [x] Agent generated `index.html`
-- [x] Agent generated JS files in `src/js/` and CSS in `src/css/`
-- [x] Ran `npm run lint` and fixed any errors
-- [x] Ran `npm run dev` and confirmed the site loads
+- [ ] Created `src/js/experiments.js`
+- [ ] Linked it in `index.html` with a `<script type="module">` tag
+- [ ] Completed at least 5 experiments from `docs/tutorials/dom-experiments.md`
+- [ ] Each experiment is commented — what it does and why you tried it
+- [ ] Ran `npm run lint` and fixed any errors
+- [ ] Updated `docs/error-log.md`
 
-## Part 4 — Modify your AGENTS.md
+## Part 4 — Update AGENTS.md and reflect
 
-- [x] Read `docs/a-good-agents-md.md`
-- [x] Added at least 3 personal instructions to AGENTS.md
-- [x] Tested the instructions in a short agent conversation
-- [x] Noted what changed in the agent's behavior
+- [ ] Updated "About this student" section again with what you actually learned
+- [ ] Added at least 2 new personal instructions based on this week's learning
+- [ ] Completed `docs/reflections/week-2-reflection.md`
+- [ ] Ran `npm run lint` — passes
+- [ ] Ran `npm run build` — builds successfully
+- [ ] Deployed to Netlify
+- [ ] Pushed to GitHub
+- [ ] GitHub Actions lint check shows green
 
-## Part 5 — Deploy and reflect
-
-- [x] Ran `npm run build` successfully
-- [x] Deployed to Netlify
-- [x] Pushed to GitHub
-- [x] GitHub Actions lint workflow shows a green check
-- [x] Completed `ai-collaboration-summary-template.md`
-
-## Files to submit
+## What to submit
 
 - [ ] Live Netlify URL
 - [ ] GitHub repo URL
-- [ ] Completed `ai-collaboration-summary-template.md` in the repo
+- [ ] 2–3 sentence Canvas answer: What was the most surprising thing you discovered when reading the code the agent wrote for you?
+
+## Extra credit
+
+- [ ] Write one Vitest test for a pure function in `matching.js`
+- [ ] Run `npm run test` and confirm it passes
