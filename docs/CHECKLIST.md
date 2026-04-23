@@ -4,12 +4,12 @@ Use this checklist to make sure you have completed every part of the assignment.
 
 ## Part 1 — Read your code
 
-- [ ] Updated AGENTS.md "About this student" section before starting (start-of-week ritual)
-- [ ] Ran `npm run dev` and confirmed site loads
-- [ ] Read `src/js/app.js` top to bottom — can explain what each function does
-- [ ] Read `src/js/matching.js` — can explain the logic
-- [ ] Read `src/js/data.js` — know the shape and count of your data
-- [ ] Tried `document.querySelector()` in the browser console
+- [x] Updated AGENTS.md "About this student" section before starting (start-of-week ritual)
+- [x] Ran `npm run dev` and confirmed site loads
+- [x] Read `src/js/app.js` top to bottom — can explain what each function does
+- [x] Read `src/js/matching.js` — can explain the logic
+- [x] Read `src/js/data.js` — know the shape and count of your data
+- [x] Tried `document.querySelector()` in the browser console
 
 ## Part 2 — Modernize your code
 
