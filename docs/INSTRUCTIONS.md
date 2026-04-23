@@ -1,133 +1,154 @@
-# Instructions
+# Instructions — Week 2: DOM Fundamentals
 
-This assignment has five parts. Work through them in order. Each part builds on the one before it.
+**Due:** Thursday, April 2, 2026 at 5:00 PM ET
 
----
+**HAP Learning Lab companion:** [hap-dom.netlify.app](https://hap-dom.netlify.app)
 
-## Part 1 — Plan your site with your agent
+This week you take ownership of the code. In Week 1, an AI agent built your site. This week you read it, understand it, and improve it — by hand.
 
-Before you touch this repo, you need a plan. You will create that plan in your **original** "What Should I...?" repo — the site you built earlier in the course (e.g., "What Should I Listen To?") — by having a planning conversation with an AI agent.
-
-1. **You will be closing this repo soon**, but first read through all of Part 1 so you know what to expect.
-2. **Open this gist URL:** `https://gist.github.com/cynthiateeters/b2aa58e6f6c67fb2400309c8543febc5` — this is your planning guide. It walks you through the conversation, model selection, and creating your `BUILD-PROMPT.md`.
-3. **In the other repo**, you will start a Copilot agent conversation and paste something like:
-
-   > "Read this planning guide and help me follow every step: <https://gist.github.com/cynthiateeters/b2aa58e6f6c67fb2400309c8543febc5>"
-
-   The agent will read the gist, walk you through the planning conversation, and help you create your `BUILD-PROMPT.md` — all inside the right repo.
-
-4. **When you are done**, bring `BUILD-PROMPT.md` back to this repo (the guide explains how) and continue with Part 2.
-5. **OK, close this repo** and open your original "What Should I...?" repo in VS Code. You have everything you need.
+This assignment has four parts. Work through them in order.
 
 ---
 
-## Part 2 — Get it running
+## Part 1 — Read your code
 
-If you have already cloned this repo and run `npm install`, confirm everything still works and move on. If not, do it now.
+Before you change anything, understand what you have.
 
-> **Before you start**, read [docs/tutorials/dev-tooling-overview.md](tutorials/dev-tooling-overview.md). It explains how all the tools in this repo fit together. You do not need to memorize it — just get the big picture. Come back to it whenever something surprises you.
+1. **Update AGENTS.md first.** Open `AGENTS.md` and update the "About this student" section. You are about to learn DOM manipulation — tell your agent that. This is the start-of-week ritual: before you begin new work, make sure your AI tools know what you are learning. You will update it again at the end of the week with what you actually learned.
 
-1. **Clone this repo** and open it in VS Code
-2. **Install dependencies:**
-
-   ```bash
-   npm install
-   ```
-
-   This also installs Husky, which sets up a pre-commit hook automatically.
-3. **Start the dev server:**
-
+2. **Start the dev server:**
    ```bash
    npm run dev
    ```
+   Confirm your site loads and the form works.
 
-   A placeholder page should appear in the browser. This confirms Vite is working. Your agent will replace this page when you build your site.
-4. **Confirm linting passes:**
+3. **Open `src/js/app.js`** and read it top to bottom. Do not skim — read every line. For each function, answer these questions in your head:
+   - What does this function receive?
+   - What does it do with the DOM?
+   - What does it return?
 
+4. **Open `src/js/matching.js`** and do the same. Notice that this file has no DOM code — it works entirely with data. That separation is intentional.
+
+5. **Open `src/js/data.js`** and look at the shape of your data. How many items do you have? What properties does each item have?
+
+6. **Open your browser's DevTools** (F12 or right-click → Inspect). Go to the Console tab. Try these:
+   ```js
+   document.querySelector('form')
+   document.querySelector('h1')
+   document.querySelectorAll('option')
+   ```
+   You should see your form, your heading, and a list of your select options. This is how JavaScript finds things in the DOM — and it is how you will work with the DOM from now on.
+
+If you can explain what each function in `app.js` does to someone else, you are ready for Part 2.
+
+---
+
+## Part 2 — Modernize your code
+
+Your agent likely used some patterns that are outdated or unsafe. You are going to fix them.
+
+### Replace `getElementById` with `querySelector`
+
+If your `app.js` uses `document.getElementById('something')`, replace every instance with `document.querySelector('#something')`. Notice the `#` — that is a CSS selector for an ID element. The same syntax you already know from your stylesheets.
+
+`querySelector` is the modern standard. It uses CSS selectors, which means you can find elements by class (`.card`), by tag (`form`), by attribute (`[data-id]`), or by ID (`#results`). `getElementById` can only find by ID.
+
+Read `docs/reference/queryselector-guide.md` for the full picture. If you have done the HAP DOM lab, this connects to Station 2 — the scene where HAP pushed back on `getElementById`.
+
+After replacing, run your site and confirm everything still works.
+
+### Replace `innerHTML` with safe DOM methods
+
+Look for any place your code uses `innerHTML` to build HTML from data. This is common in card-building functions — the agent may have written something like:
+
+```js
+card.innerHTML = `
+  <h3>${item.title}</h3>
+  <p>${item.category}</p>
+`;
+```
+
+This works, but it is a security risk when the data could come from user input or an external source. In Security Safari, you saw how `innerHTML` can execute injected scripts.
+
+Replace it with programmatic DOM construction:
+
+```js
+const heading = document.createElement('h3');
+heading.textContent = item.title;
+
+const category = document.createElement('p');
+category.textContent = item.category;
+
+card.appendChild(heading);
+card.appendChild(category);
+```
+
+This is more lines of code, but it is safe by default — `textContent` never executes HTML.
+
+Read `docs/reference/safe-dom-manipulation.md` for a deeper explanation. If you have done the HAP DOM lab, this connects to Stations 3 and 4 — Grace's warning about `innerHTML` and the safe code path.
+
+Replace every `innerHTML` that builds from data. If you have `innerHTML` that creates a static template with no variables, that is acceptable — but add a comment explaining why it is safe.
+
+### Run lint and fix
+
+After your changes:
+```bash
+npm run lint
+```
+
+Fix any errors. Log each error and fix in `docs/error-log.md`.
+
+---
+
+## Part 3 — DOM experiments
+
+Now that you know how to find and change things in the DOM, it is time to play.
+
+1. **Create a new file: `src/js/experiments.js`**
+
+2. **Link it in your `index.html`** with a script tag:
+   ```html
+   <script type="module" src="/src/js/experiments.js"></script>
+   ```
+
+3. **Work through the experiments in `docs/tutorials/dom-experiments.md`.** The tutorial has a menu of things to try — from simple (change text on the page) to adventurous (build something from scratch that was not in the original HTML).
+
+   Every experiment uses the DOM methods you just learned: `querySelector`, `textContent`, `classList`, `createElement`, `appendChild`. The goal is to get comfortable with them by doing things that are visible and immediate.
+
+4. **Keep at least 5 experiments in your final `experiments.js`.** Comment each one so you remember what it does and why you tried it.
+
+5. **Run lint and fix:**
    ```bash
    npm run lint
    ```
+   Update `docs/error-log.md` with any errors.
 
-   This should pass with no errors.
-5. **Confirm Husky is working:** Make a small test commit (like editing this file with a comment). When you commit, you should see lint-staged run in your terminal. If it does, Husky is installed correctly. You can revert this commit afterward if you like.
-
-6. **Enable GitHub notifications:** Go to your repo on GitHub, click the **Watch** dropdown (top right), and select **All Activity**. Your instructor delivers weekly updates as Issues and Pull Requests — this ensures you see them. See [docs/course/weekly-updates-how-it-works.md](course/weekly-updates-how-it-works.md) for the full workflow.
-
-Once everything runs without errors, you are ready for Part 3.
+The experiments file is yours. It is a sandbox for learning. Next week you will use these same skills to build real features — but this week, the point is to try things and see what happens.
 
 ---
 
-## Part 3 — Build the site
+## Part 4 — Update AGENTS.md and reflect
 
-Now you will use your build prompt to generate your site inside this repo.
+You now know things about the DOM that you did not know last week. Your AGENTS.md should reflect that.
 
-1. **Make sure `BUILD-PROMPT.md` is in the root of this repo**
-2. **Open this repo in VS Code agent mode**
-3. **Paste the contents of `BUILD-PROMPT.md`** as your first message to the agent. Tell the agent to **replace** the existing placeholder files (`index.html`, `src/js/app.js`, `src/css/style.css`) with your site — do not append to them.
-4. The agent will generate files:
-   - `index.html` in the repo root (replaces the placeholder)
-   - JavaScript files in `src/js/` (`data.js`, `matching.js`, `app.js`) and CSS in `src/css/`
-5. **Run the linter:**
+1. **Update the "About this student" section** again. At the start of the week you told your agent you were about to learn DOM manipulation. Now update it to reflect what you actually learned — be specific about what you can do.
 
+2. **Add at least 2 new personal instructions** to the bottom section based on what you learned this week. Think about:
+   - Did the agent generate `getElementById` when you now know `querySelector` is better? Add a rule.
+   - Did the agent use `innerHTML` in ways that concern you after reading about XSS? Add a rule.
+   - What DOM patterns do you want the agent to follow going forward?
+
+3. **Complete `docs/reflections/week-2-reflection.md`** — answer every question thoughtfully. This file arrives in your repo via the week 2 PR in a new `docs/reflections/` folder.
+
+4. **Run lint, build, and deploy:**
    ```bash
    npm run lint
-   ```
-
-   The agent may have introduced linting errors. Fix them — this is part of the learning. Read the error messages, understand what rule was violated, and check `docs/reference/eslint-rules.md` if you need help.
-6. **Run the dev server:**
-
-   ```bash
-   npm run dev
-   ```
-
-   Confirm your page loads in the browser and test your form.
-
----
-
-## Part 4 — Modify your AGENTS.md
-
-Now that you have worked with an AI agent, you know more about what helps and what does not.
-
-1. **Read `docs/a-good-agents-md.md`** — it explains what makes an effective AGENTS.md and how to write personal instructions
-2. **Open `AGENTS.md`** in the repo root and scroll to the "My personal instructions" section at the bottom
-3. **Add at least 3 personal instructions** based on your experience. Think about:
-   - What did the agent do well that you want it to keep doing?
-   - What did the agent do that was unhelpful?
-   - How do you learn best — analogies, short examples, step-by-step?
-   - Any design or code preferences specific to your project?
-4. **Try them out.** Start a short conversation with the agent and see if your instructions change its behavior. Note what is different.
-
----
-
-## Part 5 — Deploy and reflect
-
-Wrap up by building, deploying, and reflecting on the process.
-
-1. **Build the project:**
-
-   ```bash
    npm run build
    ```
-
-   Confirm Vite builds successfully with no errors.
-2. **Deploy to Netlify using the Netlify CLI.** If you haven't set up the CLI yet, see [docs/reference/cli-tools.md](reference/cli-tools.md) for installation and login steps. If this is your first deploy from this repo, initialize the site first:
-
-   ```bash
-   netlify init
-   ```
-
-   When prompted, choose "Create & configure a new site" and set the publish directory to `dist`. Then deploy:
-
-   ```bash
-   netlify deploy --prod
-   ```
-
-   Save your live URL — you will submit it.
-3. **Push to GitHub** and check the Actions tab — confirm the lint workflow runs and shows a green check
-4. **Complete `ai-collaboration-summary-template.md`** — answer every question thoughtfully. This is where you reflect on what you learned about working with AI agents in a real tooling environment.
+   Deploy to Netlify. Push to GitHub. Confirm the Actions lint check passes.
 
 ## What to submit
 
 - Your live Netlify URL
-- Your GitHub repo URL (make sure it is public or that your instructor has access)
-- Your completed `ai-collaboration-summary-template.md` in the repo
+- Your GitHub repo URL
+- A 2–3 sentence answer on Canvas: What was the most surprising thing you discovered when reading the code the agent wrote for you?
