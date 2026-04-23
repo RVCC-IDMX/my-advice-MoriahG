@@ -5,15 +5,15 @@ import { breeds } from './breeds.js';
 import { filterPets } from './filters.js';
 
 // DOM element references for all main controls and sections
-const classSelect = document.getElementById('classSelect');
-const speciesSelect = document.getElementById('speciesSelect');
-const breedSelect = document.getElementById('breedSelect');
-const filterForm = document.getElementById('filterForm');
-const moreFiltersBtn = document.getElementById('moreFiltersBtn');
-const moreFiltersDrawer = document.getElementById('moreFiltersDrawer');
-const resultsSection = document.getElementById('resultsSection');
-const gridViewBtn = document.getElementById('gridViewBtn');
-const listViewBtn = document.getElementById('listViewBtn');
+const classSelect = document.querySelector('#classSelect');
+const speciesSelect = document.querySelector('#speciesSelect');
+const breedSelect = document.querySelector('#breedSelect');
+const filterForm = document.querySelector('#filterForm');
+const moreFiltersBtn = document.querySelector('#moreFiltersBtn');
+const moreFiltersDrawer = document.querySelector('#moreFiltersDrawer');
+const resultsSection = document.querySelector('#resultsSection');
+const gridViewBtn = document.querySelector('#gridViewBtn');
+const listViewBtn = document.querySelector('#listViewBtn');
 
 // Key for storing view mode in sessionStorage
 const VIEW_KEY = 'petViewMode';
@@ -178,7 +178,7 @@ function createOption(value, label) {
  * @param {Array} options - The options to add (array of {value, label}).
  */
 function populateSelect(select, options) {
-  select.innerHTML = '';
+  select.innerHTML = ''; // Safe innerHTML usage for clearing content, not set to data
   select.appendChild(createOption('', 'Any'));
   if (!Array.isArray(options)) return;
   const fragment = document.createDocumentFragment();
@@ -245,7 +245,7 @@ function formatLabel(value) {
  * Populates the more filters drawer with filter controls.
  */
 function populateMoreFilters() {
-  moreFiltersDrawer.innerHTML = '';
+  moreFiltersDrawer.innerHTML = ''; // Safe innerHTML usage for clearing content, not set to data
   const col1 = document.createElement('div');
   const col2 = document.createElement('div');
   col1.className = 'drawer-column';
@@ -458,8 +458,8 @@ function renderActiveFilters() {
     }
   });
 
-  const container = document.getElementById('activeFilters');
-  container.innerHTML = '';
+  const container = document.querySelector('#activeFilters');
+  container.innerHTML = ''; // Safe innerHTML usage for clearing content, not set to data
   container.classList.toggle('has-filters', activeFilters.length > 0);
 
   const pillElements = [];
@@ -579,7 +579,7 @@ function renderResults() {
   const filters = getFilters();
   const { results } = filterPets(filters);
 
-  resultsSection.innerHTML = '';
+  resultsSection.innerHTML = ''; // Safe innerHTML usage for clearing content, not set to data
   if (results.length === 0) {
     const emptyCard = document.createElement('div');
     emptyCard.className = 'pet-card';

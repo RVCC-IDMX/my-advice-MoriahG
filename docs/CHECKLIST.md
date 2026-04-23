@@ -13,12 +13,12 @@ Use this checklist to make sure you have completed every part of the assignment.
 
 ## Part 2 — Modernize your code
 
-- [ ] Replaced every `getElementById` with `querySelector` (using CSS selector syntax)
-- [ ] Replaced every data-driven `innerHTML` with `createElement` + `textContent`
-- [ ] Any remaining `innerHTML` has a comment explaining why it is safe
-- [ ] Site still works after changes — form submits, results display
-- [ ] Ran `npm run lint` and fixed any errors
-- [ ] Updated `docs/error-log.md` with any errors encountered
+- [x] Replaced every `getElementById` with `querySelector` (using CSS selector syntax)
+- [x] Replaced every data-driven `innerHTML` with `createElement` + `textContent`
+- [x] Any remaining `innerHTML` has a comment explaining why it is safe
+- [x] Site still works after changes — form submits, results display
+- [x] Ran `npm run lint` and fixed any errors
+- [x] Updated `docs/error-log.md` with any errors encountered
 
 ## Part 3 — DOM experiments
 
