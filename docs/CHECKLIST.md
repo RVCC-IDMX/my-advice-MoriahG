@@ -22,12 +22,12 @@ Use this checklist to make sure you have completed every part of the assignment.
 
 ## Part 3 — DOM experiments
 
-- [ ] Created `src/js/experiments.js`
-- [ ] Linked it in `index.html` with a `<script type="module">` tag
-- [ ] Completed at least 5 experiments from `docs/tutorials/dom-experiments.md`
-- [ ] Each experiment is commented — what it does and why you tried it
-- [ ] Ran `npm run lint` and fixed any errors
-- [ ] Updated `docs/error-log.md`
+- [x] Created `src/js/experiments.js`
+- [x] Linked it in `index.html` with a `<script type="module">` tag
+- [x] Completed at least 5 experiments from `docs/tutorials/dom-experiments.md`
+- [x] Each experiment is commented — what it does and why you tried it
+- [x] Ran `npm run lint` and fixed any errors
+- [x] Updated `docs/error-log.md`
 
 ## Part 4 — Update AGENTS.md and reflect
 

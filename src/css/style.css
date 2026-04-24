@@ -20,6 +20,10 @@
   padding: 0;
 }
 
+.hidden {
+  display: none;
+}
+
 body {
   font-family: 'Nunito', Arial, sans-serif;
   color: var(--color-text);
@@ -47,6 +51,12 @@ h6 {
   padding: 1.5rem 1rem 0.5rem 1rem;
   box-shadow: 0 2px 8px 0 hsl(222, 5%, 46%);
 }
+
+.evil-header {
+  background: rgb(255, 0, 0);
+  box-shadow: 0 10px 10px 0 rgb(0, 0, 0);
+}
+
 .main-nav {
   display: flex;
   align-items: center;
@@ -282,6 +292,7 @@ label {
   gap: 2rem 1.5em;
   align-items: start;
 }
+
 .drawer fieldset {
   border: none;
   padding: 0;
