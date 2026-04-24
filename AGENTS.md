@@ -2,7 +2,7 @@
 
 ## About this student
 
-JavaScript student, post-midterm. Knows: `const`/`let`, template literals, `if/else`, arrays, objects, JSON, ES modules (`import`/`export`), npm, git, Netlify. Currently learning DOM manipulation with this project. Has NOT done async or APIs yet.
+JavaScript student, post-midterm. Knows: `const`/`let`, template literals, `if/else`, arrays, objects, JSON, ES modules (`import`/`export`), npm, git, Netlify, DOM manipulation using methods such as `querySelector`, `createElement`, `classList`, `textContent`, `innerHTML`, `appendChild`. Has NOT done async or APIs yet.
 
 ## How to help
 
@@ -67,3 +67,7 @@ When implimenting code fixes or making new changes, ensure there is no repeated 
 Ensure each visual element of the code displays properly in various view port sizes and is responsively compatible with the media queries.
 
 For every new function, add JSDoc comments to explain the purpose, parameters, and return value. If the function is lengthly and complex, add a few brief comments when necessary to clarify the logic and/or syntax.
+
+Do not create multiple reference variables to the same element in the DOM. Instead, create one reference and reuse it.
+
+Always use `textContent` when adding data to the DOM, and only use `innerHTML` for hardcoded templates with no external data. If `innerHTML` is used, add a comment explaining why it is safe.

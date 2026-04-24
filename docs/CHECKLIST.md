@@ -31,14 +31,14 @@ Use this checklist to make sure you have completed every part of the assignment.
 
 ## Part 4 — Update AGENTS.md and reflect
 
-- [ ] Updated "About this student" section again with what you actually learned
-- [ ] Added at least 2 new personal instructions based on this week's learning
-- [ ] Completed `docs/reflections/week-2-reflection.md`
-- [ ] Ran `npm run lint` — passes
-- [ ] Ran `npm run build` — builds successfully
-- [ ] Deployed to Netlify
-- [ ] Pushed to GitHub
-- [ ] GitHub Actions lint check shows green
+- [x] Updated "About this student" section again with what you actually learned
+- [x] Added at least 2 new personal instructions based on this week's learning
+- [x] Completed `docs/reflections/week-2-reflection.md`
+- [x] Ran `npm run lint` — passes
+- [x] Ran `npm run build` — builds successfully
+- [x] Deployed to Netlify
+- [x] Pushed to GitHub
+- [x] GitHub Actions lint check shows green
 
 ## What to submit
 
