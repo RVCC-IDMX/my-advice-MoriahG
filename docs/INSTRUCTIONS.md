@@ -1,144 +1,161 @@
-# Instructions — Week 2: DOM Fundamentals
+# Instructions — Week 3: Events & View Functions
 
-**Due:** Thursday, April 2, 2026 at 5:00 PM ET
+**Due:** Thursday, April 9, 2026 at 5:00 PM ET
 
-**HAP Learning Lab companion:** [hap-dom.netlify.app](https://hap-dom.netlify.app)
+**HAP Learning Lab companion:** [hap-events.netlify.app](https://hap-events.netlify.app)
 
-This week you take ownership of the code. In Week 1, an AI agent built your site. This week you read it, understand it, and improve it — by hand.
+This week you add real interactivity to your site. Until now, the AI agent wrote the event handler for your form. This week you understand that handler, write your own event listeners, and restructure your code so your app feels like it has multiple pages — all within one HTML file.
 
-This assignment has four parts. Work through them in order.
-
----
-
-## Part 1 — Read your code
-
-Before you change anything, understand what you have.
-
-1. **Update AGENTS.md first.** Open `AGENTS.md` and update the "About this student" section. You are about to learn DOM manipulation — tell your agent that. This is the start-of-week ritual: before you begin new work, make sure your AI tools know what you are learning. You will update it again at the end of the week with what you actually learned.
-
-2. **Start the dev server:**
-   ```bash
-   npm run dev
-   ```
-   Confirm your site loads and the form works.
-
-3. **Open `src/js/app.js`** and read it top to bottom. Do not skim — read every line. For each function, answer these questions in your head:
-   - What does this function receive?
-   - What does it do with the DOM?
-   - What does it return?
-
-4. **Open `src/js/matching.js`** and do the same. Notice that this file has no DOM code — it works entirely with data. That separation is intentional.
-
-5. **Open `src/js/data.js`** and look at the shape of your data. How many items do you have? What properties does each item have?
-
-6. **Open your browser's DevTools** (F12 or right-click → Inspect). Go to the Console tab. Try these:
-   ```js
-   document.querySelector('form')
-   document.querySelector('h1')
-   document.querySelectorAll('option')
-   ```
-   You should see your form, your heading, and a list of your select options. This is how JavaScript finds things in the DOM — and it is how you will work with the DOM from now on.
-
-If you can explain what each function in `app.js` does to someone else, you are ready for Part 2.
+This assignment has five parts. Work through them in order.
 
 ---
 
-## Part 2 — Modernize your code
+## Part 0 — Prepare your agent
 
-Your agent likely used some patterns that are outdated or unsafe. You are going to fix them.
+Before you write any code this week, update your AGENTS.md so your AI agent knows what you are learning and what patterns to follow.
 
-### Replace `getElementById` with `querySelector`
+Read `docs/guides/context-engineering.md` first. It explains why your AGENTS.md matters, how to keep it effective, and the most common mistakes. The key idea: your AGENTS.md is a budget, not a wishlist. Every rule costs tokens — choose rules that catch real mistakes, not rules that sound good.
 
-If your `app.js` uses `document.getElementById('something')`, replace every instance with `document.querySelector('#something')`. Notice the `#` — that is a CSS selector for an ID element. The same syntax you already know from your stylesheets.
+1. **Update the "About this student" section.** You are about to learn events and view functions — tell your agent that. This is the start-of-week ritual: before new work begins, make sure your AI tools know what you are learning.
 
-`querySelector` is the modern standard. It uses CSS selectors, which means you can find elements by class (`.card`), by tag (`form`), by attribute (`[data-id]`), or by ID (`#results`). `getElementById` can only find by ID.
+2. **Learn the modern JS rules.** Open `docs/rules/README.md` and read through the rule list. Each rule links to a page explaining what it does, why the modern version is better, and what the old pattern looks like. You do not need to memorize them — but read enough to recognize them.
 
-Read `docs/reference/queryselector-guide.md` for the full picture. If you have done the HAP DOM lab, this connects to Station 2 — the scene where HAP pushed back on `getElementById`.
+3. **Add rules to your AGENTS.md.** Choose rules from `docs/rules/` that apply to your project and add them to your AGENTS.md under your code rules section. Do not add every rule — pick the ones that match patterns you have actually seen your agent generate. Five to ten well-chosen rules are more effective than thirty. Each rule page includes a ready-to-paste line at the bottom.
 
-After replacing, run your site and confirm everything still works.
-
-### Replace `innerHTML` with safe DOM methods
-
-Look for any place your code uses `innerHTML` to build HTML from data. This is common in card-building functions — the agent may have written something like:
-
-```js
-card.innerHTML = `
-  <h3>${item.title}</h3>
-  <p>${item.category}</p>
-`;
-```
-
-This works, but it is a security risk when the data could come from user input or an external source. In Security Safari, you saw how `innerHTML` can execute injected scripts.
-
-Replace it with programmatic DOM construction:
-
-```js
-const heading = document.createElement('h3');
-heading.textContent = item.title;
-
-const category = document.createElement('p');
-category.textContent = item.category;
-
-card.appendChild(heading);
-card.appendChild(category);
-```
-
-This is more lines of code, but it is safe by default — `textContent` never executes HTML.
-
-Read `docs/reference/safe-dom-manipulation.md` for a deeper explanation. If you have done the HAP DOM lab, this connects to Stations 3 and 4 — Grace's warning about `innerHTML` and the safe code path.
-
-Replace every `innerHTML` that builds from data. If you have `innerHTML` that creates a static template with no variables, that is acceptable — but add a comment explaining why it is safe.
-
-### Run lint and fix
-
-After your changes:
-```bash
-npm run lint
-```
-
-Fix any errors. Log each error and fix in `docs/error-log.md`.
+When your AGENTS.md is updated with this week's context and the modern JS rules, you are ready for Part 1.
 
 ---
 
-## Part 3 — DOM experiments
+## Part 1 — Know your code
 
-Now that you know how to find and change things in the DOM, it is time to play.
+Before you change anything, document what you have.
 
-1. **Create a new file: `src/js/experiments.js`**
+1. **Fill out your code map.** Open `docs/my-code-map.md` and complete every section. This means opening your actual files — `index.html`, `app.js`, `matching.js`, `data.js`, `experiments.js`, `style.css` — and writing down what you find. Do not guess. The code map is your reference for the rest of this assignment.
 
-2. **Link it in your `index.html`** with a script tag:
-   ```html
-   <script type="module" src="/src/js/experiments.js"></script>
-   ```
+   Take your time here. If you cannot answer a section, that is useful information — it means you need to read that file more carefully.
 
-3. **Work through the experiments in `docs/tutorials/dom-experiments.md`.** The tutorial has a menu of things to try — from simple (change text on the page) to adventurous (build something from scratch that was not in the original HTML).
+2. **Review your experiments.** Open `src/js/experiments.js` and read through your Week 2 experiments. Decide which ones you want to keep as part of your site going forward. Good candidates:
+   - Anything that creates content the user would want to see
+   - Class toggles or hide/show patterns you built
+   - Elements you added to the page that improve it
 
-   Every experiment uses the DOM methods you just learned: `querySelector`, `textContent`, `classList`, `createElement`, `appendChild`. The goal is to get comfortable with them by doing things that are visible and immediate.
+3. **Migrate your keepers.** Move the code for any experiments you want to keep into `src/js/app.js`. Put them after the imports and before the form handler. Once you have moved everything you want to keep:
+   - Delete `src/js/experiments.js`
+   - Remove the `<script type="module" src="/src/js/experiments.js"></script>` line from `index.html`
 
-4. **Keep at least 5 experiments in your final `experiments.js`.** Comment each one so you remember what it does and why you tried it.
-
-5. **Run lint and fix:**
+4. **Run lint and fix:**
    ```bash
    npm run lint
    ```
-   Update `docs/error-log.md` with any errors.
+   Fix any errors. Log each one in `docs/error-log.md`.
 
-The experiments file is yours. It is a sandbox for learning. Next week you will use these same skills to build real features — but this week, the point is to try things and see what happens.
+If your code map is filled out and experiments.js is gone, you are ready for Part 2.
+
+---
+
+## Part 2 — Extract view functions into views.js
+
+Right now your `app.js` does everything — finds elements, builds cards, handles events. This part separates the rendering into its own module.
+
+Read `docs/tutorials/what-is-an-spa.md` before starting. It explains the SPA pattern and why you are making this change.
+
+1. **Create `src/js/views.js`.** This file will export functions that build and display each "screen" of your app.
+
+2. **Write three view functions:**
+   - **`showResults(items, container)`** — Takes an array of items and a container element. Clears the container, builds a card for each item using `createElement` and `textContent` (the safe DOM patterns from Week 2), and appends them. If you completed the HAP Events lab, this is the pattern from Station 3.
+
+   - **`showNoResults(container)`** — Takes a container element. Clears it and shows a "no results" message.
+
+   - **`showDetail(item, container)`** — Takes a single item and a container element. Clears the container and builds a detailed view of that one item — show all its properties, add a back button. This is new.
+
+3. **Export all three functions:**
+
+   ```js
+   export { showResults, showNoResults, showDetail };
+   ```
+
+4. **Update `app.js`.** Import your view functions and use them where the rendering code used to be:
+
+   ```js
+   import { showResults, showNoResults, showDetail } from "./views.js";
+   ```
+
+5. **Add the .hidden class** to your CSS if you do not already have it (check your code map):
+
+   ```css
+   .hidden {
+     display: none;
+   }
+   ```
+
+6. **Test.** Run `npm run dev`, submit the form, and confirm results still display correctly. The rendering now happens through your view functions instead of directly in app.js.
+
+7. **Run lint and fix.** Log errors in `docs/error-log.md`.
+
+Read `docs/tutorials/arrow-functions.md` if you see arrow function syntax you do not recognize — your agent may use it when writing view functions.
+
+---
+
+## Part 3 — Wire events and delegation
+
+Now you connect events to your views. When the user clicks a card, they see the detail view. When they click back, they return to results.
+
+Read `docs/tutorials/event-listeners-101.md` and `docs/tutorials/callbacks-explained.md` before starting. The HAP Events lab at [hap-events.netlify.app](https://hap-events.netlify.app) covers each concept in depth — work through the stations alongside this part if you want more practice.
+
+1. **Understand the inherited form handler.** Find the `addEventListener("submit", ...)` in your `app.js`. Read it line by line. Add a comment above it explaining what it does in your own words. Do not rewrite it — just understand it and document it.
+
+2. **Add event delegation on the results container.** Instead of adding a click listener to every card, add one listener to the container (the element you identified in your code map):
+
+   ```js
+   function handleCardClick(event) {
+     const card = event.target.closest(".advice-card");
+     if (!card) return;
+
+     // find the item this card represents
+     // call showDetail(item, container)
+   }
+
+   output.addEventListener("click", handleCardClick);
+   ```
+
+   You will need a way to connect each card to its data item. One approach: store the item's `id` as a `data-id` attribute on the card element, then look it up in your data when the card is clicked.
+
+3. **Add a back button in the detail view.** Your `showDetail` function should include a back button. Add a listener for it:
+
+   ```js
+   function handleBackClick() {
+     // show results again with the last set of results
+   }
+
+   backButton.addEventListener("click", handleBackClick);
+   ```
+
+   You will need to keep track of the last results so you can restore them. A module-level variable works fine.
+
+4. **Use named callback functions.** Define each handler as a separate function with a descriptive name (`handleFormSubmit`, `handleCardClick`, `handleBackClick`) and pass it to `addEventListener` by name. See `docs/tutorials/callbacks-explained.md` for why.
+
+5. **Test the full flow:**
+   - Submit the form → results appear
+   - Click a card → detail view appears
+   - Click back → results reappear
+
+6. **Run lint and fix.** Log errors in `docs/error-log.md`.
 
 ---
 
 ## Part 4 — Update AGENTS.md and reflect
 
-You now know things about the DOM that you did not know last week. Your AGENTS.md should reflect that.
+You now understand events, view functions, and the SPA pattern. Your AGENTS.md should reflect that.
 
-1. **Update the "About this student" section** again. At the start of the week you told your agent you were about to learn DOM manipulation. Now update it to reflect what you actually learned — be specific about what you can do.
+1. **Update the "About this student" section** to reflect what you actually learned this week. Be specific — what can you do now that you could not do last week?
 
-2. **Add at least 2 new personal instructions** to the bottom section based on what you learned this week. Think about:
-   - Did the agent generate `getElementById` when you now know `querySelector` is better? Add a rule.
-   - Did the agent use `innerHTML` in ways that concern you after reading about XSS? Add a rule.
-   - What DOM patterns do you want the agent to follow going forward?
+2. **Add at least 2 more personal instructions** based on what you learned this week. Think about:
+   - Does your agent try to create separate HTML files when it should use view functions? Add a rule.
+   - Does your agent use anonymous inline callbacks when named callbacks would be more readable? Add a rule.
+   - Does your agent use event delegation or does it add listeners to individual elements? Add a preference.
+   - Did you notice your agent break any of the modern JS rules you added in Part 1? Strengthen the rule or add a note about what it got wrong.
 
-3. **Complete `docs/reflections/week-2-reflection.md`** — answer every question thoughtfully. This file arrives in your repo via the week 2 PR in a new `docs/reflections/` folder.
+3. **Complete `docs/reflections/week-3-reflection.md`** — answer every question thoughtfully.
 
 4. **Run lint, build, and deploy:**
    ```bash
@@ -147,8 +164,10 @@ You now know things about the DOM that you did not know last week. Your AGENTS.m
    ```
    Deploy to Netlify. Push to GitHub. Confirm the Actions lint check passes.
 
+---
+
 ## What to submit
 
 - Your live Netlify URL
 - Your GitHub repo URL
-- A 2–3 sentence answer on Canvas: What was the most surprising thing you discovered when reading the code the agent wrote for you?
+- A 2-3 sentence answer on Canvas: What was the most important thing you learned about how events work in the browser?
