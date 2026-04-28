@@ -4,9 +4,9 @@ Use this checklist to make sure you have completed every part of the assignment.
 
 ## Part 0 — Prepare your agent
 
-- [ ] Updated AGENTS.md "About this student" section (start-of-week ritual)
-- [ ] Read `docs/rules/README.md` and browsed the rule pages
-- [ ] Added modern JS rules to AGENTS.md before starting any code work
+- [x] Updated AGENTS.md "About this student" section (start-of-week ritual)
+- [x] Read `docs/rules/README.md` and browsed the rule pages
+- [x] Added modern JS rules to AGENTS.md before starting any code work
 
 ## Part 1 — Know your code
 

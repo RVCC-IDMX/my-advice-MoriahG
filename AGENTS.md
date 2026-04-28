@@ -2,7 +2,7 @@
 
 ## About this student
 
-JavaScript student, post-midterm. Knows: `const`/`let`, template literals, `if/else`, arrays, objects, JSON, ES modules (`import`/`export`), npm, git, Netlify, DOM manipulation using methods such as `querySelector`, `createElement`, `classList`, `textContent`, `innerHTML`, `appendChild`. Has NOT done async or APIs yet.
+JavaScript student, post-midterm. Knows: `const`/`let`, template literals, `if/else`, arrays, objects, JSON, ES modules (`import`/`export`), npm, git, Netlify, DOM manipulation using methods such as `querySelector`, `createElement`, `classList`, `textContent`, `innerHTML`, `appendChild`. About to learn event and view functions. Has NOT done async or APIs yet.
 
 ## How to help
 
@@ -22,6 +22,9 @@ JavaScript student, post-midterm. Knows: `const`/`let`, template literals, `if/e
 - No `eval()`; `console.log` is allowed for debugging during development
 - No `fetch()`, `async`, `await`, or Promises — all data must come from the local `data.js` array
 - Logic functions (filtering, matching, data) must not touch the DOM — keep them testable
+- Use .append() — never .appendChild()
+- Use .dataset for data attributes — never getAttribute('data-...') or setAttribute('data-...', value)
+- Use for...of — never .forEach() or C-style for loops
 
 ### HTML
 

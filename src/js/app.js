@@ -179,19 +179,54 @@ function createOption(value, label) {
  */
 function populateSelect(select, options) {
   select.innerHTML = ''; // Safe innerHTML usage for clearing content, not set to data
-  select.appendChild(createOption('', 'Any'));
+  select.append(createOption('', 'Any'));
   if (!Array.isArray(options)) return;
   const fragment = document.createDocumentFragment();
-  options.forEach((item) => {
+  for (const item of options) {
     if (
       item &&
       typeof item.value !== 'undefined' &&
       typeof item.label === 'string'
     ) {
-      fragment.appendChild(createOption(item.value, item.label));
+      fragment.append(createOption(item.value, item.label));
     }
-  });
-  select.appendChild(fragment);
+  }
+  select.append(fragment);
+}
+
+const speciesById = Object.fromEntries(
+  species.map((item) => [item.id, item.name])
+);
+
+/**
+ * Gets the visible label from a select element.
+ * Only returns a label for a real selection, not the placeholder.
+ * @param {HTMLSelectElement|null} select - The select element.
+ * @returns {string|undefined} The selected option text.
+ */
+function getSelectedOptionLabel(select) {
+  if (!select || select.value === '') return undefined;
+  return select.selectedOptions[0]?.textContent;
+}
+
+/**
+ * Gets the select element for a drawer filter.
+ * @param {string} key - The filter key.
+ * @returns {HTMLSelectElement|null} The drawer select.
+ */
+function getDrawerSelect(key) {
+  return moreFiltersDrawer.querySelector(`select[name="${key}"]`);
+}
+
+/**
+ * Gets all checked checkbox inputs for a drawer filter.
+ * @param {string} key - The filter key.
+ * @returns {Array<HTMLInputElement>} The checked inputs.
+ */
+function getCheckedInputs(key) {
+  return Array.from(
+    moreFiltersDrawer.querySelectorAll(`input[name="${key}"]:checked`)
+  );
 }
 
 /**
@@ -251,35 +286,35 @@ function populateMoreFilters() {
   col1.className = 'drawer-column';
   col2.className = 'drawer-column';
 
-  drawerFilters.forEach((filter, index) => {
+  for (const [index, filter] of drawerFilters.entries()) {
     const fieldset = document.createElement('fieldset');
     fieldset.className = 'filter-group';
 
     if (filter.type === 'single') {
       const legend = document.createElement('legend');
       legend.textContent = filter.label;
-      fieldset.appendChild(legend);
+      fieldset.append(legend);
 
       const select = document.createElement('select');
       select.name = filter.name;
       select.id = filter.name;
       select.setAttribute('aria-label', filter.label);
-      select.appendChild(createOption('', 'Any'));
-      filter.options.forEach((option) => {
-        select.appendChild(createOption(String(option.value), option.label));
-      });
-      fieldset.appendChild(select);
+      select.append(createOption('', 'Any'));
+      for (const option of filter.options) {
+        select.append(createOption(String(option.value), option.label));
+      }
+      fieldset.append(select);
     } else {
       const details = document.createElement('details');
       details.className = 'filter-dropdown';
       const summary = document.createElement('summary');
       summary.textContent = filter.label;
-      details.appendChild(summary);
+      details.append(summary);
 
       const optionWrapper = document.createElement('div');
       optionWrapper.className = 'dropdown-options';
 
-      filter.options.forEach((option) => {
+      for (const option of filter.options) {
         const checkboxId = `${filter.name}-${option}`;
         const label = document.createElement('label');
         label.className = `checkbox-label checkbox-label-${filter.name}`;
@@ -303,24 +338,22 @@ function populateMoreFilters() {
         });
 
         label.setAttribute('for', checkboxId);
-        label.appendChild(input);
-        label.appendChild(document.createTextNode(formatLabel(option)));
-        optionWrapper.appendChild(label);
-      });
+        label.append(input, formatLabel(option));
+        optionWrapper.append(label);
+      }
 
-      details.appendChild(optionWrapper);
-      fieldset.appendChild(details);
+      details.append(optionWrapper);
+      fieldset.append(details);
     }
 
     if (index % 2 === 0) {
-      col1.appendChild(fieldset);
+      col1.append(fieldset);
     } else {
-      col2.appendChild(fieldset);
+      col2.append(fieldset);
     }
-  });
+  }
 
-  moreFiltersDrawer.appendChild(col1);
-  moreFiltersDrawer.appendChild(col2);
+  moreFiltersDrawer.append(col1, col2);
 }
 
 // --- Event listeners for filter UI ---
@@ -376,16 +409,13 @@ function getFilters() {
     breedId: breedSelect.value,
   };
 
-  multiFilterNames.forEach((key) => {
-    const values = Array.from(
-      moreFiltersDrawer.querySelectorAll(`input[name="${key}"]:checked`),
-      (checkbox) => checkbox.value
-    );
+  for (const key of multiFilterNames) {
+    const values = getCheckedInputs(key).map((checkbox) => checkbox.value);
     if (values.length) filters[key] = values;
-  });
+  }
 
-  singleFilterNames.forEach((key) => {
-    const select = moreFiltersDrawer.querySelector(`select[name="${key}"]`);
+  for (const key of singleFilterNames) {
+    const select = getDrawerSelect(key);
     if (select && select.value !== '') {
       // Only convert to boolean for goodWithChildren/goodWithOtherPets
       if (key === 'goodWithChildren' || key === 'goodWithOtherPets') {
@@ -394,7 +424,7 @@ function getFilters() {
         filters[key] = select.value;
       }
     }
-  });
+  }
   return filters;
 }
 
@@ -402,38 +432,24 @@ function getFilters() {
  * Renders the active filter pills in the UI.
  */
 function renderActiveFilters() {
-  const filters = getFilters();
   const activeFilters = [];
-  if (filters.classId) {
-    const selected = classSelect.selectedOptions[0]?.textContent;
-    if (selected)
+  for (const [select, key] of [
+    [classSelect, 'classId'],
+    [speciesSelect, 'speciesId'],
+    [breedSelect, 'breedId'],
+  ]) {
+    const selected = getSelectedOptionLabel(select);
+    if (selected) {
       activeFilters.push({
-        label: `${filterNames.classId}: ${selected}`,
-        key: 'classId',
+        label: `${filterNames[key]}: ${selected}`,
+        key,
       });
-  }
-  if (filters.speciesId) {
-    const selected = speciesSelect.selectedOptions[0]?.textContent;
-    if (selected)
-      activeFilters.push({
-        label: `${filterNames.speciesId}: ${selected}`,
-        key: 'speciesId',
-      });
-  }
-  if (filters.breedId) {
-    const selected = breedSelect.selectedOptions[0]?.textContent;
-    if (selected)
-      activeFilters.push({
-        label: `${filterNames.breedId}: ${selected}`,
-        key: 'breedId',
-      });
+    }
   }
 
-  multiFilterNames.forEach((key) => {
-    const checked = Array.from(
-      moreFiltersDrawer.querySelectorAll(`input[name="${key}"]:checked`)
-    );
-    checked.forEach((option) => {
+  for (const key of multiFilterNames) {
+    const checked = getCheckedInputs(key);
+    for (const option of checked) {
       const valueLabel = option.parentElement
         ? option.parentElement.textContent.trim()
         : formatLabel(option.value);
@@ -442,11 +458,11 @@ function renderActiveFilters() {
         key,
         value: option.value,
       });
-    });
-  });
+    }
+  }
 
-  singleFilterNames.forEach((key) => {
-    const select = moreFiltersDrawer.querySelector(`select[name="${key}"]`);
+  for (const key of singleFilterNames) {
+    const select = getDrawerSelect(key);
     if (select && select.value !== '') {
       const label =
         select.selectedOptions[0]?.textContent || formatLabel(select.value);
@@ -456,7 +472,7 @@ function renderActiveFilters() {
         value: select.value,
       });
     }
-  });
+  }
 
   const container = document.querySelector('#activeFilters');
   container.innerHTML = ''; // Safe innerHTML usage for clearing content, not set to data
@@ -464,7 +480,7 @@ function renderActiveFilters() {
 
   const pillElements = [];
   const fragment = document.createDocumentFragment();
-  activeFilters.forEach((filter) => {
+  for (const filter of activeFilters) {
     const pill = document.createElement('span');
     pill.className = `filter-pill filter-pill-${filter.key}`;
     pill.textContent = filter.label;
@@ -478,12 +494,12 @@ function renderActiveFilters() {
       removeFilter(filter.key, filter.value)
     );
 
-    pill.appendChild(button);
+    pill.append(button);
     pillElements.push(pill);
-    fragment.appendChild(pill);
-  });
+    fragment.append(pill);
+  }
 
-  container.appendChild(fragment);
+  container.append(fragment);
 
   const filterBarBottom = container.parentElement;
   const viewToggle = filterBarBottom.querySelector('.view-toggle');
@@ -497,12 +513,12 @@ function renderActiveFilters() {
         pillElements[pillElements.length - 1].getBoundingClientRect().right >
           menuLeft - 32
       ) {
-        container.removeChild(pillElements.pop());
+        pillElements.pop()?.remove();
       }
       const ellipsis = document.createElement('span');
       ellipsis.className = 'filter-pill';
       ellipsis.textContent = '...';
-      container.appendChild(ellipsis);
+      container.append(ellipsis);
     }
   }
 }
@@ -532,7 +548,7 @@ function removeFilter(key, value) {
     );
     if (checkbox) checkbox.checked = false;
   } else {
-    const select = moreFiltersDrawer.querySelector(`select[name="${key}"]`);
+    const select = getDrawerSelect(key);
     if (select) select.value = '';
   }
 
@@ -546,11 +562,11 @@ function removeFilter(key, value) {
  * Highlights selected filters in the UI for accessibility and clarity.
  */
 function highlightSelectedFilters() {
-  [classSelect, speciesSelect, breedSelect].forEach((select) => {
+  for (const select of [classSelect, speciesSelect, breedSelect]) {
     select.classList.toggle('selected-filter', Boolean(select.value));
-  });
+  }
 
-  multiFilterNames.forEach((key) => {
+  for (const key of multiFilterNames) {
     const wrapper = moreFiltersDrawer.querySelector(
       `fieldset .checkbox-label-${key}`
     );
@@ -561,14 +577,14 @@ function highlightSelectedFilters() {
     if (wrapper) {
       wrapper.classList.toggle('selected-filter', someChecked);
     }
-  });
+  }
 
-  singleFilterNames.forEach((key) => {
-    const select = moreFiltersDrawer.querySelector(`select[name="${key}"]`);
+  for (const key of singleFilterNames) {
+    const select = getDrawerSelect(key);
     if (select) {
       select.classList.toggle('selected-filter', select.value !== '');
     }
-  });
+  }
 }
 
 /**
@@ -587,15 +603,14 @@ function renderResults() {
     title.textContent = 'No matches found';
     const message = document.createElement('p');
     message.textContent = 'Try adjusting your filters.';
-    emptyCard.appendChild(title);
-    emptyCard.appendChild(message);
-    resultsSection.appendChild(emptyCard);
+    emptyCard.append(title, message);
+    resultsSection.append(emptyCard);
     return;
   }
 
   const fragment = document.createDocumentFragment();
 
-  results.forEach((item) => {
+  for (const item of results) {
     const card = document.createElement('article');
     card.className = 'pet-card';
     card.tabIndex = 0;
@@ -604,29 +619,29 @@ function renderResults() {
     img.src = item.image;
     img.alt = item.imageAlt || item.name;
     img.loading = 'lazy';
-    card.appendChild(img);
+    card.append(img);
 
     const info = document.createElement('div');
     info.className = 'pet-info';
 
     const speciesName = item.speciesId
-      ? species.find((s) => s.id === item.speciesId)?.name || 'Unknown'
+      ? speciesById[item.speciesId] || 'Unknown'
       : item.name || 'Unknown';
 
     const titleRow = document.createElement('div');
     titleRow.className = 'pet-title-row';
     const name = document.createElement('h2');
     name.textContent = item.name;
-    titleRow.appendChild(name);
+    titleRow.append(name);
 
     if (speciesName && speciesName !== item.name) {
       const subtitle = document.createElement('span');
       subtitle.className = 'pet-subtitle';
       subtitle.textContent = speciesName;
-      titleRow.appendChild(subtitle);
+      titleRow.append(subtitle);
     }
 
-    info.appendChild(titleRow);
+    info.append(titleRow);
 
     const details = document.createElement('div');
     details.className = 'pet-details';
@@ -646,7 +661,7 @@ function renderResults() {
       ['Temperament', temperamentText],
     ];
 
-    rowData.forEach(([label, value]) => {
+    for (const [label, value] of rowData) {
       const row = document.createElement('div');
       row.className = 'pet-detail-row';
       const labelSpan = document.createElement('span');
@@ -655,17 +670,16 @@ function renderResults() {
       const valueSpan = document.createElement('span');
       valueSpan.className = 'pet-detail-value';
       valueSpan.textContent = value;
-      row.appendChild(labelSpan);
-      row.appendChild(valueSpan);
-      details.appendChild(row);
-    });
+      row.append(labelSpan, valueSpan);
+      details.append(row);
+    }
 
-    info.appendChild(details);
-    card.appendChild(info);
-    fragment.appendChild(card);
-  });
+    info.append(details);
+    card.append(info);
+    fragment.append(card);
+  }
 
-  resultsSection.appendChild(fragment);
+  resultsSection.append(fragment);
 }
 
 /**
@@ -673,7 +687,7 @@ function renderResults() {
  * Ensures the summary reflects the currently checked options after programmatic changes.
  */
 function updateFilterGroupSummaries() {
-  multiFilterNames.forEach((key) => {
+  for (const key of multiFilterNames) {
     // Find the details element that contains a checkbox with name=key
     const details = Array.from(
       moreFiltersDrawer.querySelectorAll('details.filter-dropdown')
@@ -690,7 +704,7 @@ function updateFilterGroupSummaries() {
     } else if (filterObj) {
       summary.textContent = filterObj.label;
     }
-  });
+  }
 }
 
 /**
