@@ -10,12 +10,12 @@ Use this checklist to make sure you have completed every part of the assignment.
 
 ## Part 1 — Know your code
 
-- [ ] Filled out every section of `docs/my-code-map.md` by reading actual files
-- [ ] Reviewed experiments.js and decided which experiments to keep
-- [ ] Moved keeper experiments into `app.js`
-- [ ] Deleted `src/js/experiments.js`
-- [ ] Removed the experiments script tag from `index.html`
-- [ ] Ran `npm run lint` — passes
+- [x] Filled out every section of `docs/my-code-map.md` by reading actual files
+- [x] Reviewed experiments.js and decided which experiments to keep
+- [x] Moved keeper experiments into `app.js`
+- [x] Deleted `src/js/experiments.js`
+- [x] Removed the experiments script tag from `index.html`
+- [x] Ran `npm run lint` — passes
 
 ## Part 2 — Extract view functions into views.js
 
