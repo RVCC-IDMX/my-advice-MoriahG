@@ -19,15 +19,15 @@ Use this checklist to make sure you have completed every part of the assignment.
 
 ## Part 2 — Extract view functions into views.js
 
-- [ ] Created `src/js/views.js`
-- [ ] `showResults(items, container)` builds cards with createElement/textContent
-- [ ] `showNoResults(container)` displays a no-results message
-- [ ] `showDetail(item, container)` displays a single item with all properties and a back button
-- [ ] All three functions are exported
-- [ ] `app.js` imports view functions from `views.js`
-- [ ] `.hidden` class exists in CSS (`display: none`)
-- [ ] Form submit still displays results correctly
-- [ ] Ran `npm run lint` — passes
+- [x] Created `src/js/views.js`
+- [x] `showResults(items, container)` builds cards with createElement/textContent
+- [x] `showNoResults(container)` displays a no-results message
+- [x] `showDetail(item, container)` displays a single item with all properties and a back button
+- [x] All three functions are exported
+- [x] `app.js` imports view functions from `views.js`
+- [x] `.hidden` class exists in CSS (`display: none`)
+- [x] Form submit still displays results correctly
+- [x] Ran `npm run lint` — passes
 
 ## Part 3 — Wire events and delegation
 

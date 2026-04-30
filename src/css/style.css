@@ -487,6 +487,31 @@ label {
   padding: 0.15rem 0;
 }
 
+.pet-detail-card {
+  background-color: var(--color-secondary);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+}
+
+.pet-detail-card img {
+  border-radius: var(--radius);
+  width: 100%;
+  max-width: 400px;
+  height: auto;
+  margin-bottom: 1rem;
+}
+
+.back-button {
+  background: var(--color-accent);
+  color: var(--color-text);
+  border: none;
+  padding: 0.5em 1.2em;
+  font-weight: 700;
+  border-radius: var(--radius);
+  cursor: pointer;
+  margin-top: 1.5rem;
+}
+
 /* 7. Footer */
 .site-footer {
   background: var(--color-primary);

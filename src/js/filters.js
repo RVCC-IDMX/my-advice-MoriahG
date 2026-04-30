@@ -15,6 +15,115 @@ function matchesRange(valueRange, filterRange) {
 
 import { species } from './species.js';
 import { breeds } from './breeds.js';
+import { classes } from './classes.js';
+
+// Configuration for all filters shown in the "More Filters" drawer
+export const drawerFilters = [
+  {
+    label: 'Size',
+    name: 'size',
+    options: ['small', 'medium', 'large', 'varied'],
+    type: 'multi',
+  },
+  {
+    label: 'Housing',
+    name: 'housing',
+    options: [
+      'apartment',
+      'house',
+      'farm',
+      'enclosure',
+      'terrarium',
+      'aquarium',
+      'cage',
+    ],
+    type: 'multi',
+  },
+  {
+    label: 'Space',
+    name: 'space',
+    options: ['small', 'medium', 'large', 'varied'],
+    type: 'multi',
+  },
+  {
+    label: 'Climate',
+    name: 'climate',
+    options: ['cold', 'temperate', 'warm', 'humid', 'hot', 'varied'],
+    type: 'multi',
+  },
+  {
+    label: 'Social Needs',
+    name: 'social',
+    options: ['solitary', 'independent', 'social', 'highlySocial', 'varied'],
+    type: 'multi',
+  },
+  {
+    label: 'Grooming',
+    name: 'grooming',
+    options: ['none', 'low', 'moderate', 'high', 'varied'],
+    type: 'multi',
+  },
+  {
+    label: 'Exercise',
+    name: 'exercise',
+    options: ['low', 'moderate', 'high', 'veryHigh', 'varied'],
+    type: 'multi',
+  },
+  {
+    label: 'Training',
+    name: 'training',
+    options: ['easy', 'moderate', 'difficult', 'varied'],
+    type: 'multi',
+  },
+  {
+    label: 'Life Span (years)',
+    name: 'lifeSpan',
+    type: 'single',
+    options: [
+      { label: '1–3 years', value: '1-3' },
+      { label: '4–7 years', value: '4-7' },
+      { label: '8–15 years', value: '8-15' },
+      { label: '16+ years', value: '16+' },
+    ],
+  },
+  {
+    label: 'Cost ($)',
+    name: 'cost',
+    type: 'single',
+    options: [
+      { label: '<$100', value: '<100' },
+      { label: '$100–$500', value: '100-500' },
+      { label: '$501–$2000', value: '501-2000' },
+      { label: '$2001+', value: '2001+' },
+    ],
+  },
+  {
+    label: 'Good with Children',
+    name: 'goodWithChildren',
+    options: [
+      { label: 'Yes', value: true },
+      { label: 'No', value: false },
+    ],
+    type: 'single',
+  },
+  {
+    label: 'Good with Other Pets',
+    name: 'goodWithOtherPets',
+    options: [
+      { label: 'Yes', value: true },
+      { label: 'No', value: false },
+    ],
+    type: 'single',
+  },
+];
+
+// Arrays of filter names by type for easy iteration
+export const multiFilterNames = drawerFilters
+  .filter((f) => f.type === 'multi')
+  .map((f) => f.name);
+export const singleFilterNames = drawerFilters
+  .filter((f) => f.type === 'single')
+  .map((f) => f.name);
 
 /**
  * Checks if a filter value is empty (for all filter types).
@@ -209,6 +318,141 @@ function getResultType(breedResultsLength, speciesOnlyLength, totalLength) {
 }
 
 /**
+ * Formats a string value with optional capitalization.
+ * @param {*} value - The value to format.
+ * @param {boolean} [capitalize=false] - Whether to capitalize the first letter.
+ * @returns {string} The formatted string or 'Unknown'.
+ */
+function formatString(value, capitalize = false) {
+  if (value === undefined || value === null || value === '') return 'Unknown';
+  let text = String(value).replace(/[_-]+/g, ' ');
+  text = text.replace(/([a-z])([A-Z])/g, '$1 $2');
+  text = text.toLowerCase();
+  return capitalize ? text.charAt(0).toUpperCase() + text.slice(1) : text;
+}
+
+/**
+ * Formats an array value for display.
+ * @param {*} value - The array to format.
+ * @returns {string} The formatted array string or 'Unknown'.
+ */
+function formatArray(value) {
+  if (!Array.isArray(value)) return 'Unknown';
+  const filtered = value.filter((item) => item !== 'varied');
+  return filtered.length ? filtered.join(', ') : 'Varied';
+}
+
+/**
+ * Formats a boolean-like value to Yes / No / Varied.
+ * @param {*} value - The value to format.
+ * @returns {string} 'Yes', 'No', or 'Varied'.
+ */
+function formatBooleanVaried(value) {
+  if (value === true) return 'Yes';
+  if (value === false) return 'No';
+  return 'Varied';
+}
+
+/**
+ * Formats a numeric range array to a display string.
+ * @param {*} range - The range array.
+ * @param {string} unit - The unit to append.
+ * @returns {string} The formatted range or 'Unknown'.
+ */
+function formatRangeValue(range, unit = '') {
+  if (!Array.isArray(range) || range.length !== 2) return 'Unknown';
+  const formatted = `${range[0]}–${range[1]}`;
+  return unit ? `${formatted} ${unit}` : formatted;
+}
+
+function formatSize(size) {
+  return formatString(size, true);
+}
+
+function formatLifespan(lifeSpan) {
+  return formatRangeValue(lifeSpan, 'yrs');
+}
+
+function formatTemperament(temperament) {
+  return formatArray(temperament);
+}
+
+function formatCost(cost) {
+  if (!cost || typeof cost !== 'object') return 'Unknown';
+  const formatRange = (range) =>
+    Array.isArray(range) && range.length === 2
+      ? `$${range[0]}–$${range[1]}`
+      : 'Unknown';
+
+  return `Initial ${formatRange(cost.initial)}, Adoption ${formatRange(
+    cost.adoption
+  )}, Monthly ${formatRange(cost.monthly)}`;
+}
+
+function formatHabitat(habitat) {
+  if (!habitat || typeof habitat !== 'object') return 'Unknown';
+
+  const housing =
+    Array.isArray(habitat.housing) && habitat.housing.length
+      ? habitat.housing.join(', ')
+      : 'Varied';
+  const space = formatString(habitat.space) || 'Varied';
+  const climate =
+    Array.isArray(habitat.climate) && habitat.climate.length
+      ? habitat.climate.join(', ')
+      : 'Varied';
+
+  return `Housing: ${housing}; Space: ${space}; Climate: ${climate}`;
+}
+
+function formatCare(care) {
+  if (!care || typeof care !== 'object') return 'Unknown';
+
+  return `Social: ${formatString(care.social, true)}, Grooming: ${formatString(
+    care.grooming,
+    true
+  )}, Exercise: ${formatString(care.exercise, true)}, Training: ${formatString(
+    care.training,
+    true
+  )}`;
+}
+
+function formatGoodWith(value) {
+  return formatBooleanVaried(value);
+}
+
+/**
+ * Formats a pet/species item for display in the views.
+ * @param {Object} item - The species or breed item.
+ * @returns {Object} The display-ready values.
+ */
+export function formatPetForDisplay(item) {
+  const isBreed = Boolean(item.speciesId);
+  const parentSpecies = isBreed
+    ? species.find((sp) => sp.id === item.speciesId)
+    : undefined;
+  const speciesName = isBreed ? parentSpecies?.name || 'Unknown' : item.name;
+  const classId = isBreed ? parentSpecies?.classId : item.classId;
+  const className =
+    classes.find((cls) => cls.id === classId)?.name || 'Unknown';
+
+  return {
+    isBreed,
+    displayName: `${isBreed ? 'Breed:' : 'Species:'} ${item.name}`,
+    speciesName,
+    className,
+    size: formatSize(item.size),
+    lifespan: formatLifespan(item.lifeSpan),
+    temperament: formatTemperament(item.temperament),
+    cost: formatCost(item.cost),
+    habitat: formatHabitat(item.habitat),
+    care: formatCare(item.care),
+    goodWithChildren: formatGoodWith(item.goodWithChildren),
+    goodWithOtherPets: formatGoodWith(item.goodWithOtherPets),
+  };
+}
+
+/**
  * Filters pets (breeds and species) based on selected filters.
  * @param {Object} [filters={}] - The filters to apply.
  * @returns {{results: Array, type: string}} The filtered results and result type.
@@ -225,7 +469,22 @@ export function filterPets(filters = {}) {
   const speciesOnly = speciesResults.filter(
     (sp) => !breedSpeciesIds.has(sp.id)
   );
-  const results = [...breedResults, ...speciesOnly];
+
+  // Attach speciesName to each result for easier rendering in views
+  const rawResults = [...breedResults, ...speciesOnly];
+  const results = rawResults.map((item) => {
+    let speciesName = item.name;
+    if (item.speciesId) {
+      const parentSpecies = species.find((s) => s.id === item.speciesId);
+      if (parentSpecies) {
+        speciesName = parentSpecies.name;
+      }
+    }
+    return {
+      ...item,
+      speciesName,
+    };
+  });
 
   return {
     results,
