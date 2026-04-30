@@ -523,6 +523,7 @@ function showResults(items, container) {
     const card = document.createElement('article');
     card.className = 'pet-card';
     card.tabIndex = 0;
+    card.dataset.id = item.id;
 
     const img = document.createElement('img');
     img.src = item.image;

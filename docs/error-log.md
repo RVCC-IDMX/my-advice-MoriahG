@@ -13,5 +13,6 @@ Every console error, browser warning, or lint failure gets a row here. Don't del
 | 4/29/26 | 'event' is defined but never used | app.js 95:33 | Event handler parameter unused | Remove unused parameter | Agent |
 | 4/29/26 | 'event' is defined but never used | app.js 106:33 | Event handler parameter unused | Remove unused parameter | Agent |
 | 4/29/26 | 'filterPets' is defined but never used | views.js 1:10 | Exported function not used in current app | Remove unused export or use it | Agent |
+| 4/30/26 | Uncaught TypeError: Cannot read properties of null (reading: 'addEventListener') | app.js 214 | Query selector returned null because element isn't in DOM until after showDetail is called | Moved querySelector and event listener inside showDetail after the element is created | Me |
 
 Blamed: who or what introduced the error — you, the agent, or the starter code.
