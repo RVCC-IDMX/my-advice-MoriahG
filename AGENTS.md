@@ -2,7 +2,7 @@
 
 ## About this student
 
-JavaScript student, post-midterm. Knows: `const`/`let`, template literals, `if/else`, arrays, objects, JSON, ES modules (`import`/`export`), npm, git, Netlify, DOM manipulation using methods such as `querySelector`, `createElement`, `classList`, `textContent`, `innerHTML`, `appendChild`. About to learn event and view functions. Has NOT done async or APIs yet.
+JavaScript student, post-midterm. Knows: `const`/`let`, template literals, `if/else`, arrays, objects, JSON, ES modules (`import`/`export`), npm, git, Netlify, DOM manipulation using methods such as `querySelector`, `createElement`, `classList`, `textContent`, `innerHTML`, `appendChild`, and knows `addEventListener`, event object, callbacks, view functions, SPA pattern, event delegation and bubbling. Has NOT done async or APIs yet.
 
 ## How to help
 
@@ -74,3 +74,7 @@ For every new function, add JSDoc comments to explain the purpose, parameters, a
 Do not create multiple reference variables to the same element in the DOM. Instead, create one reference and reuse it.
 
 Always use `textContent` when adding data to the DOM, and only use `innerHTML` for hardcoded templates with no external data. If `innerHTML` is used, add a comment explaining why it is safe.
+
+When suggesting or making event listeners, use named callback functions instead of anonymous inline functions.
+
+Keep all logic and filtering functions inside filters.js, separate from DOM manipulation in view.js and app.js. If moving code from file to file is needed, ensure all imports and exports are updated and being used.
