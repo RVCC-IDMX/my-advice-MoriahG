@@ -1,59 +1,76 @@
-# Completion checklist — Week 3: Events & View Functions
+# Completion checklist — Week 4: Fetch, serverless, and live data
 
 Use this checklist to make sure you have completed every part of the assignment. Each item should be a clear yes or no.
 
-## Part 0 — Prepare your agent
+## Part 0 — Merge, install, and meet your new linter
 
-- [x] Updated AGENTS.md "About this student" section (start-of-week ritual)
-- [x] Read `docs/rules/README.md` and browsed the rule pages
-- [x] Added modern JS rules to AGENTS.md before starting any code work
+- [ ] Merged the Week 4 PR
+- [ ] Ran `npm install` — saw preinstall and postinstall messages
+- [ ] Deleted `.eslintrc.cjs` (replaced by `eslint.config.js`)
+- [ ] Ran `npm run lint` — noted violations from new unicorn rules
+- [ ] Read `docs/tutorials/what-are-hooks.md`
+- [ ] Read `docs/tutorials/harness-engineering.md`
+- [ ] Read `docs/reference/safe-dom-manipulation.md` (updated — innerHTML now blocked by linter)
+- [ ] Fixed lint violations (used `--fix` where possible, manual fixes where needed)
+- [ ] Logged lint fixes in `docs/error-log.md`
+- [ ] Updated AGENTS.md with async/fetch rules and enforcement layer notes
+- [ ] Ran `npm run dev:api` and visited `http://localhost:8888/.netlify/functions/api` — saw Dog API JSON
+- [ ] Ran `npm run lint` — passes
 
-## Part 1 — Know your code
+## Part 1 — Serverless proxy
 
-- [x] Filled out every section of `docs/my-code-map.md` by reading actual files
-- [x] Reviewed experiments.js and decided which experiments to keep
-- [x] Moved keeper experiments into `app.js`
-- [x] Deleted `src/js/experiments.js`
-- [x] Removed the experiments script tag from `index.html`
-- [x] Ran `npm run lint` — passes
+- [ ] Read `docs/tutorials/your-first-serverless-function.md` and your API guide in `docs/api-guides/`
+- [ ] Replaced hardcoded Dog API data with a fetch to my project's API
+- [ ] Serverless function transforms API response to match my views' expected shape
+- [ ] try/catch around the API call with 502 error response on failure
+- [ ] Checks response.ok before parsing upstream response
+- [ ] If API key needed: `.env` file created with the key, accessed via `process.env`
+- [ ] `npm run dev:api` → `http://localhost:8888/.netlify/functions/api` shows my API data in the right shape
+- [ ] Ran `npm run lint` — passes
 
-## Part 2 — Extract view functions into views.js
+## Part 2 — Fetch and render
 
-- [x] Created `src/js/views.js`
-- [x] `showResults(items, container)` builds cards with createElement/textContent
-- [x] `showNoResults(container)` displays a no-results message
-- [x] `showDetail(item, container)` displays a single item with all properties and a back button
-- [x] All three functions are exported
-- [x] `app.js` imports view functions from `views.js`
-- [x] `.hidden` class exists in CSS (`display: none`)
-- [x] Form submit still displays results correctly
-- [x] Ran `npm run lint` — passes
+- [ ] Replaced `import { data }` with async fetch to `/.netlify/functions/api`
+- [ ] View functions receive fetched data and render cards
+- [ ] Loading state visible while data loads
+- [ ] try/catch around fetch with response.ok check
+- [ ] Error message appears in the DOM on fetch failure (not just console.log)
+- [ ] Cards render from live API data (same look as before, different source)
+- [ ] Ran `npm run lint` — passes
 
-## Part 3 — Wire events and delegation
+## Part 3A — Enrich your views
 
-- [x] Added a comment above the inherited form submit handler explaining what it does
-- [x] Event delegation: one click listener on the results container (not on individual cards)
-- [x] Uses `.closest()` to identify the clicked card
-- [x] Clicking a card shows the detail view
-- [x] Clicking the back button returns to the results view
-- [ ] Uses `preventDefault()` on the form
-- [x] All event handlers are named callback functions (not anonymous inline)
-- [x] Full flow works: submit form → results → click card → detail → click back → results
-- [x] Ran `npm run lint` — passes
+- [ ] Added 1-2 new fields from the API that data.js didn't have
+- [ ] Updated serverless function to include new field(s)
+- [ ] Updated views.js to display new data
+- [ ] Defensive rendering: missing fields don't crash the app
+- [ ] New data visible in cards or detail view
+- [ ] Ran `npm run lint` — passes
 
-## Part 4 — AGENTS.md + reflect
+## Part 3B — Cache with localStorage
 
-- [x] Updated AGENTS.md "About this student" with what you actually learned
-- [x] Added at least 2 more personal instructions about events or SPA patterns
-- [x] Completed every question in `docs/reflections/week-3-reflection.md`
-- [x] Ran `npm run lint` — passes
-- [x] Ran `npm run build` — builds successfully
-- [x] Deployed to Netlify
-- [x] Pushed to GitHub
-- [x] GitHub Actions lint check shows green
+- [ ] loadCache and saveCache functions use try/catch wrapper pattern
+- [ ] API response cached after successful fetch
+- [ ] Page load checks cache first, fetches only if cache is empty or invalid
+- [ ] Shape validation on cached data
+- [ ] Self-heals on corrupt cache data (removes bad entry, falls back to fetch)
+- [ ] Tested: refresh loads from cache, clear cache triggers re-fetch, offline mode works
+- [ ] Ran `npm run lint` — passes
+
+## Part 4 — Deploy and reflect
+
+- [ ] If API key needed: environment variable set in Netlify UI
+- [ ] Deployed to Netlify with `netlify deploy --prod`
+- [ ] Deployed site shows API data correctly
+- [ ] Filled out `docs/my-code-map-v2-additions.md`
+- [ ] Completed `docs/reflections/week-4-reflection.md`
+- [ ] Ran `npm run lint` — passes
+- [ ] Ran `npm run build` — builds successfully
+- [ ] Pushed to GitHub
+- [ ] GitHub Actions lint check shows green
 
 ## What to submit
 
 - [ ] Live Netlify URL
 - [ ] GitHub repo URL
-- [ ] 2-3 sentence Canvas answer: What was the most important thing you learned about how events work in the browser?
+- [ ] 2-3 sentence Canvas answer: What is the enforcement ladder, and which layer changed your coding habits the most this week?
