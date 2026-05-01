@@ -10,8 +10,9 @@ For each file, write one sentence about what it does.
 
 | File                    | What it does |
 | ----------------------- | ------------ |
-| `src/js/app.js`         | finds and creates elements to handle user interactions and filters |
-| `src/js/filters.js`    | filters pets based on given filters |
+| `src/js/app.js`         | imports views and wires events |
+| `src/js/views.js`       | builds and renders page with view functions |
+| `src/js/filters.js`    | filters pets based on given filters and formats the results |
 | `src/js/breeds.js`        | defines breed dataset for pets |
 | `src/js/species.js`        | defines species dataset for pets |
 | `src/js/classes.js`        | defines classes dataset for pets |
@@ -69,17 +70,19 @@ Look at how your app.js builds each result card. What elements make up one card?
 
 Look through your app.js for any `addEventListener` calls. List each one.
 
-| Where in the code | Event type | What it does |
-| ----------------- | ---------- | ------------ |
-| checkbox input in `populateMoreFilters` — line 331 | change | Updates the filter group summary text when drawer checkboxes are selected/deselected |
-| `moreFiltersBtn` — line 360 | click | Toggles the more filters drawer open/closed and updates aria state |
-| `classSelect` — line 367 | change | Filters species options by the selected class and resets breed selection |
-| `speciesSelect` — line 373 | change | Filters breed options by the selected species |
-| `gridViewBtn` — line 388 | click | Switches results to grid view, saves view mode, and rerenders results |
-| `listViewBtn` — line 395 | click | Switches results to list view, saves view mode, and rerenders results |
-| remove button on filter pills — line 493 | click | Removes the filter pill from UI and updates the results |
-| `filterForm` — line 721 | change | Updates pills, highlights, and results when filters change in the form |
-| `moreFiltersDrawer` — line 722 | change | Updates pills, highlights, and results when filters change in the drawer |
+| Line # | Element | Event type | What it's handler does |
+| ---- | ------- | ---------- | ------------ |
+| 29 | `document` | `DOMContentLoaded` | Waits for the DOM to finish loading before querying elements and wiring all handlers |
+| 70 | `#moreFiltersBtn` | `click` | Toggles the More Filters drawer open/closed |
+| 80 | `#classSelect` | `change` | Updates species and breed dropdown by selected class |
+| 89 | `#speciesSelect` | `change` | Updates breed dropdown by selected species |
+| 99 | `#gridViewBtn` | `click` | Switches results to grid view, updates toggle button, and rerenders results |
+| 109 | `#listViewBtn` | `click` | Switches results to list view, updates toggle button, and rerenders results |
+| 177 | `#filterForm` | `change` | Updates active filters, highlights, and results on filter changes |
+| 179 | `#moreFiltersDrawer` | `change` | Updates drawer summaries, active filters, highlights, and results on drawer changes |
+| 191 | `#activeFilters` | `click` | Removes active filter when removing filter via filter pills |
+| 216 | `.back-button` | `click` | Returns from detail view to results when the back button is clicked |
+| 218 | `#resultsSection` | `click` | Delegates clicks on pet cards to show detail view for the selected pet |
 
 If you do not see any `addEventListener` calls, write "none found" — and then look again, because the form handler uses one.
 
