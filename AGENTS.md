@@ -2,7 +2,7 @@
 
 ## About this student
 
-JavaScript student, post-midterm. Knows: `const`/`let`, template literals, `if/else`, arrays, objects, JSON, ES modules (`import`/`export`), npm, git, Netlify, DOM manipulation using methods such as `querySelector`, `createElement`, `classList`, `textContent`, `innerHTML`, `appendChild`, and knows `addEventListener`, event object, callbacks, view functions, SPA pattern, event delegation and bubbling. Has NOT done async or APIs yet.
+JavaScript student, post-midterm. Knows: `const`/`let`, template literals, `if/else`, arrays, objects, JSON, ES modules (`import`/`export`), npm, git, Netlify, DOM manipulation using methods such as `querySelector`, `createElement`, `classList`, `textContent`, `innerHTML`, `appendChild`, and knows `addEventListener`, event object, callbacks, view functions, SPA pattern, event delegation and bubbling. Currently learning async/fetch and API integration.
 
 ## How to help
 
@@ -20,11 +20,13 @@ JavaScript student, post-midterm. Knows: `const`/`let`, template literals, `if/e
 - `const` by default; `let` only when reassignment needed; never `var`
 - `textContent` for user input in DOM; `innerHTML` only for hardcoded template literals
 - No `eval()`; `console.log` is allowed for debugging during development
-- No `fetch()`, `async`, `await`, or Promises — all data must come from the local `data.js` array
 - Logic functions (filtering, matching, data) must not touch the DOM — keep them testable
 - Use .append() — never .appendChild()
 - Use .dataset for data attributes — never getAttribute('data-...') or setAttribute('data-...', value)
 - Use for...of — never .forEach() or C-style for loops
+- Use fetch() and response.json() with await inside async functions
+- Always check response.ok before parsing
+- Wrap fetches in try/catch
 
 ### HTML
 
@@ -60,8 +62,20 @@ src/js/species.js    ← dataset only
 src/js/breeds.js     ← dataset only
 src/js/filters.js    ← logic, no DOM
 src/js/app.js        ← DOM wiring only
+src/js/view.js       ← DOM rendering and view functions
 src/css/style.css    ← all styles
 ```
+
+### Rule Enforcement ladder
+To ensure code quality, rules are enforced by layers:
+
+- Layer 1 | Advisory - AGENTS.md
+
+- Layer 2 | Linter - ESLint + unicorn
+    - new rules within eslint.config.js
+
+- Layer 3 | Blocker - Husky Pre-commit hook + GitHub CI
+
 
 ## My personal instructions
 

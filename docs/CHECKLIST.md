@@ -4,18 +4,18 @@ Use this checklist to make sure you have completed every part of the assignment.
 
 ## Part 0 — Merge, install, and meet your new linter
 
-- [ ] Merged the Week 4 PR
-- [ ] Ran `npm install` — saw preinstall and postinstall messages
-- [ ] Deleted `.eslintrc.cjs` (replaced by `eslint.config.js`)
-- [ ] Ran `npm run lint` — noted violations from new unicorn rules
-- [ ] Read `docs/tutorials/what-are-hooks.md`
-- [ ] Read `docs/tutorials/harness-engineering.md`
-- [ ] Read `docs/reference/safe-dom-manipulation.md` (updated — innerHTML now blocked by linter)
-- [ ] Fixed lint violations (used `--fix` where possible, manual fixes where needed)
-- [ ] Logged lint fixes in `docs/error-log.md`
-- [ ] Updated AGENTS.md with async/fetch rules and enforcement layer notes
-- [ ] Ran `npm run dev:api` and visited `http://localhost:8888/.netlify/functions/api` — saw Dog API JSON
-- [ ] Ran `npm run lint` — passes
+- [x] Merged the Week 4 PR
+- [x] Ran `npm install` — saw preinstall and postinstall messages
+- [x] Deleted `.eslintrc.cjs` (replaced by `eslint.config.js`)
+- [x] Ran `npm run lint` — noted violations from new unicorn rules
+- [x] Read `docs/tutorials/what-are-hooks.md`
+- [x] Read `docs/tutorials/harness-engineering.md`
+- [x] Read `docs/reference/safe-dom-manipulation.md` (updated — innerHTML now blocked by linter)
+- [x] Fixed lint violations (used `--fix` where possible, manual fixes where needed)
+- [x] Logged lint fixes in `docs/error-log.md`
+- [x] Updated AGENTS.md with async/fetch rules and enforcement layer notes
+- [x] Ran `npm run dev:api` and visited `http://localhost:8888/.netlify/functions/api` — saw Dog API JSON
+- [x] Ran `npm run lint` — passes
 
 ## Part 1 — Serverless proxy
 

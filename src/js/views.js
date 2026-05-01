@@ -19,7 +19,7 @@ function createOption(value, label) {
  * @param {Array} options - The options to add (array of {value, label}).
  */
 function populateSelect(select, options) {
-  select.innerHTML = ''; // Safe innerHTML usage for clearing content, not set to data
+  select.textContent = '';
   select.append(createOption('', 'Any'));
   if (!Array.isArray(options)) return;
   const fragment = document.createDocumentFragment();
@@ -156,7 +156,7 @@ function formatLabel(value) {
  * @param {Array} filtersData - The configuration array for the filters.
  */
 function populateMoreFilters(drawerContainer, filtersData) {
-  drawerContainer.innerHTML = ''; // Safe innerHTML usage for clearing content, not set to data
+  drawerContainer.textContent = '';
   const col1 = document.createElement('div');
   const col2 = document.createElement('div');
   col1.className = 'drawer-column';
@@ -278,7 +278,7 @@ function highlightSelectedFilters(
  * @param {HTMLElement} container - The container element for active filters.
  */
 function renderActiveFilters(activeFilters, container) {
-  container.innerHTML = ''; // Safe innerHTML usage for clearing content, not set to data
+  container.textContent = '';
   container.classList.toggle('has-filters', activeFilters.length > 0);
 
   const pillElements = [];
