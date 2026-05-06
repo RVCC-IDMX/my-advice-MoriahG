@@ -1,4 +1,5 @@
 import { formatPetForDisplay } from './filters.js';
+import { fetchImg } from './app.js';
 
 /**
  * Creates an <option> element for a select dropdown.
@@ -443,8 +444,9 @@ function updateFilterGroupSummaries(drawer, multiFilterNames, drawerFilters) {
  * Renders the filtered pet results in the results container.
  * @param {Array} items - The list of pets to display.
  * @param {HTMLElement} container - The DOM element where the results will be rendered.
+ * @param {number} [displayCount=20] - The maximum number of cards to display initially.
  */
-function showResults(items, container) {
+function showResults(items, container, displayCount = 20) {
   // Show this view
   container.classList.remove('hidden');
 
@@ -452,18 +454,24 @@ function showResults(items, container) {
   container.textContent = '';
 
   const fragment = document.createDocumentFragment();
+  const itemsToDisplay = items.slice(0, displayCount);
 
-  for (const item of items) {
+  for (const item of itemsToDisplay) {
     const card = document.createElement('article');
     card.className = 'pet-card';
     card.tabIndex = 0;
     card.dataset.id = item.id;
 
     const img = document.createElement('img');
-    img.src = item.image;
     img.alt = item.imageAlt || item.name;
     img.loading = 'lazy';
     card.append(img);
+    // Fetch specific image for this card (capture img in closure)
+    fetchImg(item).then(() => {
+      if (img.src === '') {
+        img.src = item.image || '';
+      }
+    });
 
     const info = document.createElement('div');
     info.className = 'pet-info';
@@ -506,6 +514,20 @@ function showResults(items, container) {
   }
 
   container.append(fragment);
+
+  // Add load more button if there are more items to display
+  if (items.length > displayCount) {
+    const loadMoreContainer = document.createElement('div');
+    loadMoreContainer.className = 'load-more-container';
+
+    const loadMoreBtn = document.createElement('button');
+    loadMoreBtn.className = 'load-more-btn';
+    loadMoreBtn.type = 'button';
+    loadMoreBtn.textContent = 'Load More';
+
+    loadMoreContainer.append(loadMoreBtn);
+    container.append(loadMoreContainer);
+  }
 }
 
 // No results view
@@ -560,9 +582,12 @@ function showDetail(item, container) {
   titleRow.append(name);
 
   const displayRows = [
+    ['Description:', display.description],
     ['Size:', display.size],
     ['Lifespan:', display.lifespan],
     ['Temperament:', display.temperament],
+    ['Origin:', display.origin],
+    ['Breed Group:', display.breedGroup],
     /*
     ['Cost:', display.cost],
     ['Habitat:', display.habitat],

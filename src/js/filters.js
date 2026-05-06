@@ -436,9 +436,12 @@ function formatGoodWith(value) {
 export function formatPetForDisplay(item) {
   return {
     displayName: `Breed: ${item.name}`,
+    description: item.description,
     size: formatSize(item.size),
     lifespan: formatLifespan(item.lifeSpan),
     temperament: formatTemperament(item.temperament),
+    origin: formatString(item.origin, true),
+    breedGroup: formatString(item.breedGroup, true),
     /*
     cost: formatCost(item.cost),
     habitat: formatHabitat(item.habitat),

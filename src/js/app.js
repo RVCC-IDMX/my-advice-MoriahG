@@ -21,6 +21,28 @@ import {
 } from './views.js';
 
 let lastResults = [];
+const ITEMS_PER_PAGE = 20;
+let displayCount = ITEMS_PER_PAGE;
+
+/**
+ * Fetches a dog image from the image API and updates the item object.
+ * Only called for cards that are actually displayed (not all breeds).
+ * @param {Object} item - The breed item object.
+ */
+export async function fetchImg(item) {
+  try {
+    const res = await fetch(`/.netlify/functions/image?breedId=${item.id}`);
+    if (!res.ok) {
+      throw new Error(`HTTP error: ${res.status}`);
+    }
+    const data = await res.json();
+    if (data && data.url) {
+      item.image = data.url;
+    }
+  } catch (error) {
+    console.error('Image fetch failed:', error);
+  }
+}
 
 // DOM element references for all main controls and sections
 document.addEventListener('DOMContentLoaded', () => {
@@ -202,16 +224,23 @@ document.addEventListener('DOMContentLoaded', () => {
   activeFiltersContainer.addEventListener('click', handleRemoveFiltersClick);
 
   /**
-   * Handles clicks on pet cards to show details and its back button.
+   * Handles clicks on pet cards to show details and its back button. Handles clicks on load more button.
    * @param {Event} event - The click event.
    */
   function handleCardClick(event) {
+    // Load more button
+    if (event.target.closest('.load-more-btn')) {
+      displayCount += ITEMS_PER_PAGE;
+      showResults(lastResults, resultsSection, displayCount);
+      return;
+    }
+
     // Back button
     if (event.target.closest('.back-button')) {
       if (lastResults.length === 0) {
         showNoResults(resultsSection);
       } else {
-        showResults(lastResults, resultsSection);
+        showResults(lastResults, resultsSection, displayCount);
       }
       return;
     }
@@ -252,10 +281,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const { results } = filterPets(breeds, filters);
     lastResults = Array.isArray(results) ? results : [];
 
+    // Reset display count on new search
+    displayCount = ITEMS_PER_PAGE;
+
     if (results.length === 0) {
       showNoResults(resultsSection);
     } else {
-      showResults(results, resultsSection);
+      showResults(results, resultsSection, displayCount);
     }
   }
 

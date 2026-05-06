@@ -40,12 +40,12 @@ Use this checklist to make sure you have completed every part of the assignment.
 
 ## Part 3A — Enrich your views
 
-- [ ] Added 1-2 new fields from the API that data.js didn't have
-- [ ] Updated serverless function to include new field(s)
-- [ ] Updated views.js to display new data
-- [ ] Defensive rendering: missing fields don't crash the app
-- [ ] New data visible in cards or detail view
-- [ ] Ran `npm run lint` — passes
+- [x] Added 1-2 new fields from the API that data.js didn't have
+- [x] Updated serverless function to include new field(s)
+- [x] Updated views.js to display new data
+- [x] Defensive rendering: missing fields don't crash the app
+- [x] New data visible in cards or detail view
+- [x] Ran `npm run lint` — passes
 
 ## Part 3B — Cache with localStorage
 

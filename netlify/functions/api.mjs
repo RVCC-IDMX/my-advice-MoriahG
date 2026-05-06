@@ -47,6 +47,7 @@ function transformBreed(breed) {
     size: sizeFromWeight(breed.weight?.metric),
     breedGroup: breed.breed_group || 'Unknown',
     origin: breed.origin || 'Unknown',
+    description: breed.description || 'No description available.',
   };
 }
 
