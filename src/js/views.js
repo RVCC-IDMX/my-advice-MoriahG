@@ -36,49 +36,15 @@ function populateSelect(select, options) {
 }
 
 /**
- * Populates the class select dropdown.
- * @param {HTMLSelectElement} select - The class <select> element.
- * @param {Array<{id: string, name: string}>} classItems - All available classes.
- */
-function populateClassSelect(select, classItems) {
-  populateSelect(
-    select,
-    Array.isArray(classItems)
-      ? classItems.map((cls) => ({ value: cls.id, label: cls.name }))
-      : []
-  );
-}
-
-/**
- * Populates the species select dropdown based on classId.
- * @param {HTMLSelectElement} select - The species <select> element.
- * @param {Array<{id: string, name: string, classId: string}>} speciesItems - All available species.
- * @param {string} classId - The currently selected class ID.
- */
-function populateSpeciesSelect(select, speciesItems, classId) {
-  populateSelect(
-    select,
-    Array.isArray(speciesItems)
-      ? speciesItems
-          .filter((sp) => !classId || sp.classId === classId)
-          .map((sp) => ({ value: sp.id, label: sp.name }))
-      : []
-  );
-}
-
-/**
- * Populates the breed select dropdown based on speciesId.
+ * Populates the breed select dropdown.
  * @param {HTMLSelectElement} select - The breed <select> element.
- * @param {Array<{id: string, name: string, speciesId: string}>} breedItems - All available breeds.
- * @param {string} speciesId - The currently selected species ID.
+ * @param {Array<{id: string, name: string}>} breedItems - All available breeds.
  */
-function populateBreedSelect(select, breedItems, speciesId) {
+function populateBreedSelect(select, breedItems) {
   populateSelect(
     select,
     Array.isArray(breedItems)
-      ? breedItems
-          .filter((br) => !speciesId || br.speciesId === speciesId)
-          .map((br) => ({ value: br.id, label: br.name }))
+      ? breedItems.map((br) => ({ value: br.id, label: br.name }))
       : []
   );
 }
@@ -89,36 +55,18 @@ function populateBreedSelect(select, breedItems, speciesId) {
  * @param {Object} params - Parameters object.
  * @param {string} params.key - The filter key to clear.
  * @param {string|boolean|undefined} params.value - The filter value to clear (for multi-select).
- * @param {HTMLSelectElement} params.classSelect - Main class select.
- * @param {HTMLSelectElement} params.speciesSelect - Main species select.
  * @param {HTMLSelectElement} params.breedSelect - Main breed select.
  * @param {HTMLElement} params.drawer - The More Filters drawer.
  * @param {Array<string>} params.multiFilterNames - Keys for multi-select filters.
- * @param {Array<{id: string, name: string, classId: string}>} params.speciesItems - All available species.
- * @param {Array<{id: string, name: string, speciesId: string}>} params.breedItems - All available breeds.
+ * @param {Array<{id: string, name: string}>} params.breedItems - All available breeds.
  */
 function clearFilterSelection({
   key,
   value,
-  classSelect,
-  speciesSelect,
   breedSelect,
   drawer,
   multiFilterNames,
-  speciesItems,
-  breedItems,
 }) {
-  if (key === 'classId') {
-    classSelect.value = '';
-    populateSpeciesSelect(speciesSelect, speciesItems, '');
-    populateBreedSelect(breedSelect, breedItems, '');
-  }
-
-  if (key === 'speciesId') {
-    speciesSelect.value = '';
-    populateBreedSelect(breedSelect, breedItems, '');
-  }
-
   if (key === 'breedId') {
     breedSelect.value = '';
   }
@@ -361,8 +309,6 @@ function getCheckedInputs(drawer, key) {
 /**
  * Builds the data used to render active filter pills based on current UI selections.
  * @param {Object} params - Parameters object.
- * @param {HTMLSelectElement} params.classSelect - Class select element.
- * @param {HTMLSelectElement} params.speciesSelect - Species select element.
  * @param {HTMLSelectElement} params.breedSelect - Breed select element.
  * @param {HTMLElement} params.drawer - The More Filters drawer element.
  * @param {Array<string>} params.multiFilterNames - Keys for multi-select filters.
@@ -370,19 +316,13 @@ function getCheckedInputs(drawer, key) {
  * @returns {Array<{label: string, key: string, value?: string}>} Active filter pill data.
  */
 function getActiveFiltersData({
-  classSelect,
-  speciesSelect,
   breedSelect,
   drawer,
   multiFilterNames,
   singleFilterNames,
 }) {
   const activeFiltersData = [];
-  for (const [select, key] of [
-    [classSelect, 'classId'],
-    [speciesSelect, 'speciesId'],
-    [breedSelect, 'breedId'],
-  ]) {
+  for (const [select, key] of [[breedSelect, 'breedId']]) {
     const selected = getSelectedOptionLabel(select);
     if (selected) {
       activeFiltersData.push({
@@ -425,8 +365,6 @@ function getActiveFiltersData({
 /**
  * Gathers all selected filter values from the main form and drawer.
  * @param {Object} params - Parameters object.
- * @param {HTMLSelectElement} params.classSelect - Main class select.
- * @param {HTMLSelectElement} params.speciesSelect - Main species select.
  * @param {HTMLSelectElement} params.breedSelect - Main breed select.
  * @param {HTMLElement} params.drawer - The More Filters drawer element.
  * @param {Array<string>} params.multiFilterNames - Keys for multi-select filters.
@@ -434,16 +372,12 @@ function getActiveFiltersData({
  * @returns {Object} The assembled filter values.
  */
 function getFilters({
-  classSelect,
-  speciesSelect,
   breedSelect,
   drawer,
   multiFilterNames,
   singleFilterNames,
 }) {
   const filters = {
-    classId: classSelect.value,
-    speciesId: speciesSelect.value,
     breedId: breedSelect.value,
   };
 
@@ -535,20 +469,12 @@ function showResults(items, container) {
     info.className = 'pet-info';
 
     const display = formatPetForDisplay(item);
-    const speciesName = display.speciesName || 'Unknown';
 
     const titleRow = document.createElement('div');
     titleRow.className = 'pet-title-row';
     const name = document.createElement('h2');
     name.textContent = item.name;
     titleRow.append(name);
-
-    if (speciesName && speciesName !== item.name) {
-      const subtitle = document.createElement('span');
-      subtitle.className = 'pet-subtitle';
-      subtitle.textContent = speciesName;
-      titleRow.append(subtitle);
-    }
 
     info.append(titleRow);
 
@@ -595,7 +521,7 @@ function showNoResults(container) {
   container.textContent = '';
 
   const emptyCard = document.createElement('div');
-  emptyCard.className = 'pet-card';
+  emptyCard.className = 'no-results';
   const title = document.createElement('h2');
   title.textContent = 'No matches found';
   const message = document.createElement('p');
@@ -634,16 +560,16 @@ function showDetail(item, container) {
   titleRow.append(name);
 
   const displayRows = [
-    ['Class:', display.className],
-    ...(display.isBreed ? [['Species', display.speciesName]] : []),
     ['Size:', display.size],
     ['Lifespan:', display.lifespan],
     ['Temperament:', display.temperament],
+    /*
     ['Cost:', display.cost],
     ['Habitat:', display.habitat],
     ['Care:', display.care],
     ['Good with children:', display.goodWithChildren],
     ['Good with other pets:', display.goodWithOtherPets],
+    */
   ];
 
   petDetails.append(titleRow);
@@ -681,8 +607,6 @@ function showDetail(item, container) {
 export {
   showResults,
   showNoResults,
-  populateClassSelect,
-  populateSpeciesSelect,
   populateBreedSelect,
   populateMoreFilters,
   updateViewToggle,

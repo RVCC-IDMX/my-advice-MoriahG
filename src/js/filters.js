@@ -13,10 +13,6 @@ function matchesRange(valueRange, filterRange) {
 }
 */
 
-import { species } from './species.js';
-import { breeds } from './breeds.js';
-import { classes } from './classes.js';
-
 // Configuration for all filters shown in the "More Filters" drawer
 export const drawerFilters = [
   {
@@ -25,6 +21,7 @@ export const drawerFilters = [
     options: ['small', 'medium', 'large', 'varied'],
     type: 'multi',
   },
+  /*
   {
     label: 'Housing',
     name: 'housing',
@@ -75,17 +72,42 @@ export const drawerFilters = [
     options: ['easy', 'moderate', 'difficult', 'varied'],
     type: 'multi',
   },
+  */
+  {
+    label: 'Temperament',
+    name: 'temperament',
+    options: [
+      'friendly',
+      'loyal',
+      'alert',
+      'intelligent',
+      'curious',
+      'affectionate',
+      'energetic',
+      'playful',
+      'gentle',
+      'confident',
+      'courageous',
+      'adaptable',
+      'calm',
+      'devoted',
+      'outgoing',
+      'eager to please',
+    ],
+    type: 'multi',
+  },
   {
     label: 'Life Span (years)',
     name: 'lifeSpan',
     type: 'single',
     options: [
-      { label: '1–3 years', value: '1-3' },
-      { label: '4–7 years', value: '4-7' },
-      { label: '8–15 years', value: '8-15' },
+      { label: '1-3 years', value: '1-3' },
+      { label: '4-7 years', value: '4-7' },
+      { label: '8-15 years', value: '8-15' },
       { label: '16+ years', value: '16+' },
     ],
   },
+  /*
   {
     label: 'Cost ($)',
     name: 'cost',
@@ -115,6 +137,7 @@ export const drawerFilters = [
     ],
     type: 'single',
   },
+  */
 ];
 
 // Arrays of filter names by type for easy iteration
@@ -189,18 +212,26 @@ function matchesDropdownRange(valueRange, filterString) {
  * @param {*} preference - The user preference to match.
  * @returns {boolean} True if the value matches the preference.
  */
+/*
 function matchesPreference(value, preference) {
   if (preference === undefined) return true;
   return value === null || value === preference;
 }
+*/
 
 const commonFilterDescriptors = [
   { getValue: (item) => item.size, filterKey: 'size', matcher: matchesFilter },
+  {
+    getValue: (item) => item.temperament,
+    filterKey: 'temperament',
+    matcher: matchesFilter,
+  },
   {
     getValue: (item) => item.lifeSpan,
     filterKey: 'lifeSpan',
     matcher: matchesDropdownRange,
   },
+  /*
   {
     getValue: (item) => item.cost?.initial,
     filterKey: 'cost',
@@ -251,6 +282,7 @@ const commonFilterDescriptors = [
     filterKey: 'goodWithOtherPets',
     matcher: matchesPreference,
   },
+  */
 ];
 
 /**
@@ -268,53 +300,24 @@ function passesCommonFilters(item, filters) {
 }
 
 /**
- * Checks if a breed matches a given classId.
- * @param {Object} breed - The breed object.
- * @param {string} classId - The class ID to match.
- * @returns {boolean} True if the breed matches the classId.
- */
-function breedMatchesClassId(breed, classId) {
-  if (!classId) return true;
-  return species.some((s) => s.id === breed.speciesId && s.classId === classId);
-}
-
-/**
  * Checks if a breed matches all selected filters.
  * @param {Object} breed - The breed object.
  * @param {Object} filters - The filters to apply.
  * @returns {boolean} True if the breed matches all filters.
  */
 function matchesBreedFilters(breed, filters) {
-  if (!breedMatchesClassId(breed, filters.classId)) return false;
-  if (filters.speciesId && breed.speciesId !== filters.speciesId) return false;
   if (filters.breedId && breed.id !== filters.breedId) return false;
   return passesCommonFilters(breed, filters);
 }
 
 /**
- * Checks if a species matches all selected filters (excluding breed).
- * @param {Object} speciesItem - The species object.
- * @param {Object} filters - The filters to apply.
- * @returns {boolean} True if the species matches all filters.
- */
-function matchesSpeciesFilters(speciesItem, filters) {
-  if (filters.breedId) return false;
-  if (filters.classId && speciesItem.classId !== filters.classId) return false;
-  if (filters.speciesId && speciesItem.id !== filters.speciesId) return false;
-  return passesCommonFilters(speciesItem, filters);
-}
-
-/**
  * Determines the result type for filtered pets.
- * @param {number} breedResultsLength - Number of breed results.
- * @param {number} speciesOnlyLength - Number of species-only results.
  * @param {number} totalLength - Total number of results.
- * @returns {string} The result type ('none', 'mixed', 'breed', or 'species').
+ * @returns {string} The result type ('none' or 'breed').
  */
-function getResultType(breedResultsLength, speciesOnlyLength, totalLength) {
+function getResultType(totalLength) {
   if (totalLength === 0) return 'none';
-  if (breedResultsLength > 0) return speciesOnlyLength > 0 ? 'mixed' : 'breed';
-  return 'species';
+  return 'breed';
 }
 
 /**
@@ -347,11 +350,13 @@ function formatArray(value) {
  * @param {*} value - The value to format.
  * @returns {string} 'Yes', 'No', or 'Varied'.
  */
+/*
 function formatBooleanVaried(value) {
   if (value === true) return 'Yes';
   if (value === false) return 'No';
   return 'Varied';
 }
+*/
 
 /**
  * Formats a numeric range array to a display string.
@@ -377,6 +382,7 @@ function formatTemperament(temperament) {
   return formatArray(temperament);
 }
 
+/*
 function formatCost(cost) {
   if (!cost || typeof cost !== 'object') return 'Unknown';
   const formatRange = (range) =>
@@ -420,78 +426,41 @@ function formatCare(care) {
 function formatGoodWith(value) {
   return formatBooleanVaried(value);
 }
+*/
 
 /**
- * Formats a pet/species item for display in the views.
- * @param {Object} item - The species or breed item.
+ * Formats a pet item for display in the views.
+ * @param {Object} item - The breed item.
  * @returns {Object} The display-ready values.
  */
 export function formatPetForDisplay(item) {
-  const isBreed = Boolean(item.speciesId);
-  const parentSpecies = isBreed
-    ? species.find((sp) => sp.id === item.speciesId)
-    : undefined;
-  const speciesName = isBreed ? parentSpecies?.name || 'Unknown' : item.name;
-  const classId = isBreed ? parentSpecies?.classId : item.classId;
-  const className =
-    classes.find((cls) => cls.id === classId)?.name || 'Unknown';
-
   return {
-    isBreed,
-    displayName: `${isBreed ? 'Breed:' : 'Species:'} ${item.name}`,
-    speciesName,
-    className,
+    displayName: `Breed: ${item.name}`,
     size: formatSize(item.size),
     lifespan: formatLifespan(item.lifeSpan),
     temperament: formatTemperament(item.temperament),
+    /*
     cost: formatCost(item.cost),
     habitat: formatHabitat(item.habitat),
     care: formatCare(item.care),
     goodWithChildren: formatGoodWith(item.goodWithChildren),
     goodWithOtherPets: formatGoodWith(item.goodWithOtherPets),
+    */
   };
 }
 
 /**
- * Filters pets (breeds and species) based on selected filters.
+ * Filters pets (breeds) based on selected filters.
  * @param {Object} [filters={}] - The filters to apply.
  * @returns {{results: Array, type: string}} The filtered results and result type.
  */
-export function filterPets(filters = {}) {
-  const breedResults = breeds.filter((breed) =>
+export function filterPets(petData, filters = {}) {
+  const results = petData.filter((breed) =>
     matchesBreedFilters(breed, filters)
   );
-  const speciesResults = species.filter((sp) =>
-    matchesSpeciesFilters(sp, filters)
-  );
-
-  const breedSpeciesIds = new Set(breedResults.map((br) => br.speciesId));
-  const speciesOnly = speciesResults.filter(
-    (sp) => !breedSpeciesIds.has(sp.id)
-  );
-
-  // Attach speciesName to each result for easier rendering in views
-  const rawResults = [...breedResults, ...speciesOnly];
-  const results = rawResults.map((item) => {
-    let speciesName = item.name;
-    if (item.speciesId) {
-      const parentSpecies = species.find((s) => s.id === item.speciesId);
-      if (parentSpecies) {
-        speciesName = parentSpecies.name;
-      }
-    }
-    return {
-      ...item,
-      speciesName,
-    };
-  });
 
   return {
     results,
-    type: getResultType(
-      breedResults.length,
-      speciesOnly.length,
-      results.length
-    ),
+    type: getResultType(results.length),
   };
 }

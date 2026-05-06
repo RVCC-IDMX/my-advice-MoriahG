@@ -1,7 +1,4 @@
 // Import data and logic modules (all local, no async)
-import { classes } from './classes.js';
-import { species } from './species.js';
-import { breeds } from './breeds.js';
 import {
   filterPets,
   drawerFilters,
@@ -13,8 +10,6 @@ import {
   showNoResults,
   showDetail,
   getFilters,
-  populateClassSelect,
-  populateSpeciesSelect,
   populateBreedSelect,
   populateMoreFilters,
   updateViewToggle,
@@ -25,10 +20,10 @@ import {
   updateFilterGroupSummaries,
 } from './views.js';
 
+let lastResults = [];
+
 // DOM element references for all main controls and sections
 document.addEventListener('DOMContentLoaded', () => {
-  const classSelect = document.querySelector('#classSelect');
-  const speciesSelect = document.querySelector('#speciesSelect');
   const breedSelect = document.querySelector('#breedSelect');
   const filterForm = document.querySelector('#filterForm');
   const moreFiltersBtn = document.querySelector('#moreFiltersBtn');
@@ -37,6 +32,31 @@ document.addEventListener('DOMContentLoaded', () => {
   const gridViewBtn = document.querySelector('#gridViewBtn');
   const listViewBtn = document.querySelector('#listViewBtn');
   const activeFiltersContainer = document.querySelector('#activeFilters');
+
+  let breeds = [];
+  let isLoadingBreeds = false;
+
+  async function fetchBreeds() {
+    isLoadingBreeds = true;
+    resultsSection.textContent = 'Loading Breeds...';
+
+    try {
+      const response = await fetch('/.netlify/functions/api');
+      if (!response.ok) {
+        throw new Error(`HTTP error: ${response.status}`);
+      }
+      breeds = await response.json();
+
+      populateBreedSelect(breedSelect, breeds);
+      isLoadingBreeds = false;
+      renderResults();
+    } catch (error) {
+      isLoadingBreeds = false;
+      resultsSection.textContent = `Fetch failed: ${error.message}`;
+    }
+  }
+
+  fetchBreeds();
 
   // Key for storing view mode in sessionStorage
   const VIEW_KEY = 'petViewMode';
@@ -70,25 +90,6 @@ document.addEventListener('DOMContentLoaded', () => {
   moreFiltersBtn.addEventListener('click', handleMoreFiltersBtnClick);
 
   /**
-   * Handles class select change: updates species and breed dropdowns.
-   * @param {Event} event - The change event.
-   */
-  function handleClassSelectChange(event) {
-    populateSpeciesSelect(speciesSelect, species, event.target.value);
-    populateBreedSelect(breedSelect, breeds, '');
-  }
-  classSelect.addEventListener('change', handleClassSelectChange);
-
-  /**
-   * Handles species select change: updates breed dropdown.
-   * @param {Event} event - The change event.
-   */
-  function handleSpeciesSelectChange(event) {
-    populateBreedSelect(breedSelect, breeds, event.target.value);
-  }
-  speciesSelect.addEventListener('change', handleSpeciesSelectChange);
-
-  /**
    * Handles grid view button click: sets view to grid.
    */
   function handleGridViewBtnClick() {
@@ -113,8 +114,6 @@ document.addEventListener('DOMContentLoaded', () => {
    */
   function updateActiveFilters() {
     const activeFiltersData = getActiveFiltersData({
-      classSelect,
-      speciesSelect,
       breedSelect,
       drawer: moreFiltersDrawer,
       multiFilterNames,
@@ -132,18 +131,15 @@ document.addEventListener('DOMContentLoaded', () => {
     clearFilterSelection({
       key,
       value,
-      classSelect,
-      speciesSelect,
       breedSelect,
       drawer: moreFiltersDrawer,
       multiFilterNames,
-      speciesItems: species,
       breedItems: breeds,
     });
 
     updateActiveFilters();
     highlightSelectedFilters(
-      [classSelect, speciesSelect, breedSelect],
+      [breedSelect],
       moreFiltersDrawer,
       multiFilterNames,
       singleFilterNames
@@ -153,11 +149,30 @@ document.addEventListener('DOMContentLoaded', () => {
       multiFilterNames,
       drawerFilters
     );
-    renderResults();
   }
 
-  // Called on any filter change; updates pills, highlights, and results
-  function handleFilterChange() {
+  /**
+   * Handles the filter form submit event.
+   * Prevents default form submission, refreshes active filter pills,
+   * highlights the selected filters, and renders results.
+   * @param {Event} event - The submit event object.
+   */
+  function handleFormSubmit(event) {
+    event.preventDefault();
+    renderResults();
+  }
+  // Listens for submit events on the main form and uses callback to update results
+  filterForm.addEventListener('submit', handleFormSubmit);
+
+  // Filters selected via more filters only affect results after form is submitted
+  moreFiltersDrawer.addEventListener('submit', handleFormSubmit);
+
+  /**
+   * Handles drawer filter changes.
+   * Updates the drawer group summaries and refreshes the active filter pill list.
+   * @param {Event} event - The change event object.
+   */
+  function handleDrawerChange() {
     updateFilterGroupSummaries(
       moreFiltersDrawer,
       multiFilterNames,
@@ -165,18 +180,14 @@ document.addEventListener('DOMContentLoaded', () => {
     );
     updateActiveFilters();
     highlightSelectedFilters(
-      [classSelect, speciesSelect, breedSelect],
+      [breedSelect],
       moreFiltersDrawer,
       multiFilterNames,
       singleFilterNames
     );
-    renderResults();
   }
-
-  // Listens for changes on the main form and uses callback to update active filters, highlights, and results
-  filterForm.addEventListener('change', handleFilterChange);
-
-  moreFiltersDrawer.addEventListener('change', handleFilterChange);
+  filterForm.addEventListener('change', handleDrawerChange);
+  moreFiltersDrawer.addEventListener('change', handleDrawerChange);
 
   /**
    * Handles clicks on the active filters container (removes filters).
@@ -191,29 +202,30 @@ document.addEventListener('DOMContentLoaded', () => {
   activeFiltersContainer.addEventListener('click', handleRemoveFiltersClick);
 
   /**
-   * Handles clicks on pet cards to show details.
+   * Handles clicks on pet cards to show details and its back button.
    * @param {Event} event - The click event.
    */
   function handleCardClick(event) {
+    // Back button
+    if (event.target.closest('.back-button')) {
+      if (lastResults.length === 0) {
+        showNoResults(resultsSection);
+      } else {
+        showResults(lastResults, resultsSection);
+      }
+      return;
+    }
+
+    // Card click
     const card = event.target.closest('.pet-card');
     if (!card) return;
 
     // find the item this card represents
     const itemId = card.dataset.id;
-    const item =
-      breeds.find((breed) => breed.id === itemId) ||
-      species.find((sp) => sp.id === itemId);
+    const item = breeds.find((breed) => breed.id === itemId);
 
     // call showDetail(item, container)
     showDetail(item, resultsSection);
-
-    // Back Button event listener (here because the button doesn't exist until showDetail is called)
-    const backButton = document.querySelector('.back-button');
-    function handleBackClick() {
-      // show results again with the last set of results
-      renderResults();
-    }
-    backButton.addEventListener('click', handleBackClick);
   }
   resultsSection.addEventListener('click', handleCardClick);
 
@@ -222,8 +234,6 @@ document.addEventListener('DOMContentLoaded', () => {
   // getFilters parameters
   const viewParams = {
     resultsSection,
-    classSelect,
-    speciesSelect,
     breedSelect,
     drawer: moreFiltersDrawer,
     multiFilterNames,
@@ -234,8 +244,13 @@ document.addEventListener('DOMContentLoaded', () => {
    * Uses showResults and showNoResults from views.js as the low-level renderer.
    */
   function renderResults() {
+    if (isLoadingBreeds) {
+      return;
+    }
+
     const filters = getFilters(viewParams);
-    const { results } = filterPets(filters);
+    const { results } = filterPets(breeds, filters);
+    lastResults = Array.isArray(results) ? results : [];
 
     if (results.length === 0) {
       showNoResults(resultsSection);
@@ -244,17 +259,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  populateClassSelect(classSelect, classes);
-  populateSpeciesSelect(speciesSelect, species, '');
-  populateBreedSelect(breedSelect, breeds, '');
+  populateBreedSelect(breedSelect, breeds);
   populateMoreFilters(moreFiltersDrawer, drawerFilters);
   updateViewToggle(getViewMode(), gridViewBtn, listViewBtn, resultsSection);
   updateActiveFilters();
   highlightSelectedFilters(
-    [classSelect, speciesSelect, breedSelect],
+    [breedSelect],
     moreFiltersDrawer,
     multiFilterNames,
     singleFilterNames
   );
-  renderResults();
 });

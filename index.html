@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>What Pet Should I Get?</title>
+    <title>What Dog Breed Should I Get?</title>
     <!-- Google Fonts -->
     <link
       href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Nunito:wght@700&display=swap"
@@ -14,24 +14,10 @@
   <body>
     <header class="site-header">
       <nav class="main-nav" aria-label="Main navigation">
-        <h1 class="site-title">What Pet Should I Get?</h1>
+        <h1 class="site-title">What Dog Breed Should I Get?</h1>
       </nav>
-      <section class="filter-bar" aria-label="Pet filters">
+      <section class="filter-bar" aria-label="Dog filters">
         <form id="filterForm" autocomplete="off">
-          <div class="filter-group">
-            <label for="classSelect">Class</label>
-            <select id="classSelect" name="class">
-              <option value="">Any</option>
-              <!-- options populated by JS -->
-            </select>
-          </div>
-          <div class="filter-group">
-            <label for="speciesSelect">Species</label>
-            <select id="speciesSelect" name="species">
-              <option value="">Any</option>
-              <!-- options populated by JS -->
-            </select>
-          </div>
           <div class="filter-group">
             <label for="breedSelect">Breed</label>
             <select id="breedSelect" name="breed">
@@ -55,6 +41,7 @@
                 class="hamburger-icon"
             /></span>
           </button>
+          <button class="submit-btn" type="submit">Find Pets</button>
           <div
             class="view-toggle"
             role="group"

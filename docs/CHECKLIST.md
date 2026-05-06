@@ -19,24 +19,24 @@ Use this checklist to make sure you have completed every part of the assignment.
 
 ## Part 1 — Serverless proxy
 
-- [ ] Read `docs/tutorials/your-first-serverless-function.md` and your API guide in `docs/api-guides/`
-- [ ] Replaced hardcoded Dog API data with a fetch to my project's API
-- [ ] Serverless function transforms API response to match my views' expected shape
-- [ ] try/catch around the API call with 502 error response on failure
-- [ ] Checks response.ok before parsing upstream response
-- [ ] If API key needed: `.env` file created with the key, accessed via `process.env`
-- [ ] `npm run dev:api` → `http://localhost:8888/.netlify/functions/api` shows my API data in the right shape
-- [ ] Ran `npm run lint` — passes
+- [x] Read `docs/tutorials/your-first-serverless-function.md` and your API guide in `docs/api-guides/`
+- [x] Replaced hardcoded Dog API data with a fetch to my project's API
+- [x] Serverless function transforms API response to match my views' expected shape
+- [x] try/catch around the API call with 502 error response on failure
+- [x] Checks response.ok before parsing upstream response
+- [x] If API key needed: `.env` file created with the key, accessed via `process.env`
+- [x] `npm run dev:api` → `http://localhost:8888/.netlify/functions/api` shows my API data in the right shape
+- [x] Ran `npm run lint` — passes
 
 ## Part 2 — Fetch and render
 
-- [ ] Replaced `import { data }` with async fetch to `/.netlify/functions/api`
-- [ ] View functions receive fetched data and render cards
-- [ ] Loading state visible while data loads
-- [ ] try/catch around fetch with response.ok check
-- [ ] Error message appears in the DOM on fetch failure (not just console.log)
-- [ ] Cards render from live API data (same look as before, different source)
-- [ ] Ran `npm run lint` — passes
+- [x] Replaced `import { data }` with async fetch to `/.netlify/functions/api`
+- [x] View functions receive fetched data and render cards
+- [x] Loading state visible while data loads
+- [x] try/catch around fetch with response.ok check
+- [x] Error message appears in the DOM on fetch failure (not just console.log)
+- [x] Cards render from live API data (same look as before, different source)
+- [x] Ran `npm run lint` — passes
 
 ## Part 3A — Enrich your views
 
