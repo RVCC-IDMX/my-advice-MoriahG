@@ -21,7 +21,7 @@ export const drawerFilters = [
     options: ['small', 'medium', 'large', 'varied'],
     type: 'multi',
   },
-  /*
+  /* TODO: revive in Final via Groq inference
   {
     label: 'Housing',
     name: 'housing',
@@ -107,7 +107,7 @@ export const drawerFilters = [
       { label: '16+ years', value: '16+' },
     ],
   },
-  /*
+  /* TODO: revive in Final via Groq inference
   {
     label: 'Cost ($)',
     name: 'cost',
@@ -206,7 +206,7 @@ function matchesDropdownRange(valueRange, filterString) {
   return true;
 }
 
-/**
+/** TODO: revive in Final via Groq inference
  * Checks if a value matches a user preference (for boolean/single values).
  * @param {*} value - The value to check.
  * @param {*} preference - The user preference to match.
@@ -231,7 +231,7 @@ const commonFilterDescriptors = [
     filterKey: 'lifeSpan',
     matcher: matchesDropdownRange,
   },
-  /*
+  /* TODO: revive in Final via Groq inference
   {
     getValue: (item) => item.cost?.initial,
     filterKey: 'cost',
@@ -345,7 +345,7 @@ function formatArray(value) {
   return filtered.length ? filtered.join(', ') : 'Varied';
 }
 
-/**
+/** TODO: revive in Final via Groq inference
  * Formats a boolean-like value to Yes / No / Varied.
  * @param {*} value - The value to format.
  * @returns {string} 'Yes', 'No', or 'Varied'.
@@ -370,19 +370,35 @@ function formatRangeValue(range, unit = '') {
   return unit ? `${formatted} ${unit}` : formatted;
 }
 
+/**
+ * Format a size value for display (capitalized).
+ * @param {*} size - Size value (string or other) to format
+ * @returns {string} Human-friendly size string
+ */
 function formatSize(size) {
   return formatString(size, true);
 }
 
+/**
+ * Format a life span range for display with units.
+ * @param {*} lifeSpan - Array-like [min, max] lifespan values
+ * @returns {string} Formatted lifespan string (e.g. "2–8 yrs")
+ */
 function formatLifespan(lifeSpan) {
   return formatRangeValue(lifeSpan, 'yrs');
 }
 
+/**
+ * Format temperament array for display.
+ * Filters out the special "varied" value and joins items.
+ * @param {*} temperament - Array of temperament descriptors
+ * @returns {string} Formatted temperament string or 'Unknown'
+ */
 function formatTemperament(temperament) {
   return formatArray(temperament);
 }
 
-/*
+/* TODO: revive in Final via Groq inference
 function formatCost(cost) {
   if (!cost || typeof cost !== 'object') return 'Unknown';
   const formatRange = (range) =>
@@ -442,7 +458,7 @@ export function formatPetForDisplay(item) {
     temperament: formatTemperament(item.temperament),
     origin: formatString(item.origin, true),
     breedGroup: formatString(item.breedGroup, true),
-    /*
+    /* TODO: revive in Final via Groq inference
     cost: formatCost(item.cost),
     habitat: formatHabitat(item.habitat),
     care: formatCare(item.care),

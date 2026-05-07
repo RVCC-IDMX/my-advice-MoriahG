@@ -466,9 +466,9 @@ function showResults(items, container, displayCount = 20) {
     img.alt = item.imageAlt || item.name;
     img.loading = 'lazy';
     card.append(img);
-    // Fetch specific image for this card (capture img in closure)
+    // Fetch specific image for this card
     fetchImg(item).then(() => {
-      if (img.src === '') {
+      if (!img.src) {
         img.src = item.image || '';
       }
     });
@@ -554,6 +554,12 @@ function showNoResults(container) {
 }
 
 // Detail view
+/**
+ * Render a detail view for a single item into the provided container.
+ * @param {Object} item - The item (breed) to display. Expected fields: `image`, `imageAlt`, `name`, etc.
+ * @param {HTMLElement} container - The container element where the detail view will be rendered.
+ * @returns {void}
+ */
 function showDetail(item, container) {
   // Show this view
   container.classList.remove('hidden');
@@ -588,7 +594,7 @@ function showDetail(item, container) {
     ['Temperament:', display.temperament],
     ['Origin:', display.origin],
     ['Breed Group:', display.breedGroup],
-    /*
+    /* TODO: revive in Final via Groq inference
     ['Cost:', display.cost],
     ['Habitat:', display.habitat],
     ['Care:', display.care],

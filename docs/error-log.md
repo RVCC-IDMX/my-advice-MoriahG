@@ -22,5 +22,6 @@ Every console error, browser warning, or lint failure gets a row here. Don't del
 | 5/5/26 | 'formatCare' is defined but never used | filters.js 383 | Not commented out | Commented out | Agent |
 | 5/5/26 | 'formatGoodWith' is defined but never used | filters.js 395 | Not commented out | Commented out | Agent |
 | 5/5/26 | 'breedItems' is defined but never used | views.js 70 | Variable not referenced in current app | Remove unused variable | Agent |
+| 5/6/26 | 'isLoadingBreeds' is assigned a value but never used | app.js 113 | Removed some code for 'isLoadingBreeds' | Readded code | Me |
 
 Blamed: who or what introduced the error — you, the agent, or the starter code.

@@ -49,13 +49,13 @@ Use this checklist to make sure you have completed every part of the assignment.
 
 ## Part 3B — Cache with localStorage
 
-- [ ] loadCache and saveCache functions use try/catch wrapper pattern
-- [ ] API response cached after successful fetch
-- [ ] Page load checks cache first, fetches only if cache is empty or invalid
-- [ ] Shape validation on cached data
-- [ ] Self-heals on corrupt cache data (removes bad entry, falls back to fetch)
-- [ ] Tested: refresh loads from cache, clear cache triggers re-fetch, offline mode works
-- [ ] Ran `npm run lint` — passes
+- [x] loadCache and saveCache functions use try/catch wrapper pattern
+- [x] API response cached after successful fetch
+- [x] Page load checks cache first, fetches only if cache is empty or invalid
+- [x] Shape validation on cached data
+- [x] Self-heals on corrupt cache data (removes bad entry, falls back to fetch)
+- [x] Tested: refresh loads from cache, clear cache triggers re-fetch, offline mode works
+- [x] Ran `npm run lint` — passes
 
 ## Part 4 — Deploy and reflect
 

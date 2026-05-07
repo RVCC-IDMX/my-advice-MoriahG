@@ -1,7 +1,4 @@
-/**
- * Serverless API proxy
- */
-
+// --------- Data transformation functions ---------
 /**
  * Parses a range string (e.g., "10 - 12 years") and returns an array of two numbers.
  * @param {string} rangeString - The range string to parse.
@@ -50,6 +47,8 @@ function transformBreed(breed) {
     description: breed.description || 'No description available.',
   };
 }
+
+// --------- Serverless function handler ---------
 
 /**
  * Netlify serverless function handler for the Dog API proxy.

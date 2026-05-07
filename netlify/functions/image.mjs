@@ -1,3 +1,10 @@
+/**
+ * Netlify function handler that proxies a request to TheDogAPI to fetch
+ * a single image for a given breed id.
+ * Expects a query param `breedId` and returns the first image object or an empty object.
+ * @param {Request} req - Incoming request object (platform request-like API)
+ * @returns {Response} JSON response with image data or an error shape
+ */
 export default async function handler(req) {
   // Extract ?breedId=XXX from the request URL
   const url = new URL(req.url);

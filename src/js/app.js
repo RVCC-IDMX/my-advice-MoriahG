@@ -23,24 +23,106 @@ import {
 let lastResults = [];
 const ITEMS_PER_PAGE = 20;
 let displayCount = ITEMS_PER_PAGE;
+const CACHE_TTL_MS = 24 * 60 * 60 * 1000; // 24 hours
+let isBreedSelectPopulated = false; // Flag to track if dropdown is populated
+
+// --------- Caching functions for localStorage ---------
+
+/**
+ * Load a cached value from localStorage and respect TTL.
+ * Returns parsed data or null when not present/expired/invalid.
+ * @param {string} key - Storage key to read
+ * @returns {*|null} Parsed cached value or null
+ */
+function loadCache(key) {
+  try {
+    const raw = localStorage.getItem(key);
+    if (!raw) return null;
+    const { timestamp, data } = JSON.parse(raw);
+    if (
+      Date.now() - timestamp > CACHE_TTL_MS &&
+      (!Array.isArray(data) ||
+        !(
+          (typeof data === 'string' && data.trim() !== '') ||
+          (typeof data?.url === 'string' && data.url.trim() !== '')
+        ))
+    ) {
+      localStorage.removeItem(key);
+      return null;
+    }
+    return data;
+  } catch {
+    localStorage.removeItem(key);
+    return null;
+  }
+}
+
+/**
+ * Save a value to localStorage with a timestamp for TTL.
+ * Silently fails if storage is unavailable or full.
+ * @param {string} key - Storage key to write
+ * @param {*} data - Data to serialize and store
+ * @returns {void}
+ */
+function saveCache(key, data) {
+  try {
+    localStorage.setItem(key, JSON.stringify({ timestamp: Date.now(), data }));
+  } catch {
+    // localStorage full or unavailable — fall through
+  }
+}
+
+// --------- Image API fetching with caching  ---------
 
 /**
  * Fetches a dog image from the image API and updates the item object.
- * Only called for cards that are actually displayed (not all breeds).
- * @param {Object} item - The breed item object.
+ * Includes a failsafe for breeds without photos to avoid repeated API calls.
+ * (Exported so views can request images for items.)
+ * @param {Object} item - The breed item object. Must include `id`.
+ * @returns {Promise<void>} Resolves once image is set or skipped
  */
 export async function fetchImg(item) {
   try {
+    const cacheKey = `breedImage_${item.id}`;
+    const noPhotoCacheKey = 'noPhotoBreeds';
+
+    // Load "no-photo" cache
+    let noPhotoCache = loadCache(noPhotoCacheKey);
+    if (!Array.isArray(noPhotoCache)) {
+      noPhotoCache = [];
+    }
+
+    if (noPhotoCache.includes(item.id)) {
+      //console.warn(`Skipping fetch for breed ${item.id} (no photo available)`);
+      return;
+    }
+
+    // Check image cache
+    const cached = loadCache(cacheKey);
+    if (cached) {
+      item.image = cached;
+      return;
+    }
+
+    // Fetch image from API
     const res = await fetch(`/.netlify/functions/image?breedId=${item.id}`);
     if (!res.ok) {
       throw new Error(`HTTP error: ${res.status}`);
     }
+
     const data = await res.json();
     if (data && data.url) {
       item.image = data.url;
+      saveCache(cacheKey, data.url);
+    } else {
+      // Add to "no-photo" cache if no image is available
+      if (!noPhotoCache.includes(item.id)) {
+        noPhotoCache = [...noPhotoCache, item.id]; // Ensure proper array update
+        saveCache(noPhotoCacheKey, noPhotoCache);
+      }
     }
-  } catch (error) {
-    console.error('Image fetch failed:', error);
+  } catch {
+    //console.error('Image fetch failed:', error);
   }
 }
 
@@ -58,6 +140,10 @@ document.addEventListener('DOMContentLoaded', () => {
   let breeds = [];
   let isLoadingBreeds = false;
 
+  /**
+   * Fetches breed data from the API.
+   * @returns {Promise<Array>} A promise resolving to the array of breed objects.
+   */
   async function fetchBreeds() {
     isLoadingBreeds = true;
     resultsSection.textContent = 'Loading Breeds...';
@@ -67,18 +153,28 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!response.ok) {
         throw new Error(`HTTP error: ${response.status}`);
       }
-      breeds = await response.json();
 
-      populateBreedSelect(breedSelect, breeds);
+      breeds = await response.json();
       isLoadingBreeds = false;
-      renderResults();
+      return breeds;
     } catch (error) {
       isLoadingBreeds = false;
       resultsSection.textContent = `Fetch failed: ${error.message}`;
     }
   }
 
-  fetchBreeds();
+  /**
+   * Loads breeds from cache or fetches from API if cache is empty/expired.
+   * @returns {Promise<Array>} A promise resolving to the array of breed objects.
+   */
+  async function loadBreedsFromCacheOrFetch() {
+    const cacheKey = 'dogBreedsCache';
+    const cached = loadCache(cacheKey);
+    if (cached) return cached;
+    const fresh = await fetchBreeds();
+    saveCache(cacheKey, fresh);
+    return fresh;
+  }
 
   // Key for storing view mode in sessionStorage
   const VIEW_KEY = 'petViewMode';
@@ -158,7 +254,6 @@ document.addEventListener('DOMContentLoaded', () => {
       multiFilterNames,
       breedItems: breeds,
     });
-
     updateActiveFilters();
     highlightSelectedFilters(
       [breedSelect],
@@ -258,7 +353,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   resultsSection.addEventListener('click', handleCardClick);
 
-  // --- Render views and populate dropdowns ---
+  // ------ Render views and populate dropdowns ------
 
   // getFilters parameters
   const viewParams = {
@@ -272,9 +367,18 @@ document.addEventListener('DOMContentLoaded', () => {
    * Renders the current filtered pet results.
    * Uses showResults and showNoResults from views.js as the low-level renderer.
    */
-  function renderResults() {
+  async function renderResults() {
     if (isLoadingBreeds) {
+      resultsSection.textContent = 'Loading Breeds...';
       return;
+    }
+    const allBreeds = await loadBreedsFromCacheOrFetch();
+    breeds = allBreeds;
+
+    // Populate the BreedSelect dropdown only once
+    if (!isBreedSelectPopulated) {
+      populateBreedSelect(breedSelect, breeds);
+      isBreedSelectPopulated = true;
     }
 
     const filters = getFilters(viewParams);
@@ -301,4 +405,5 @@ document.addEventListener('DOMContentLoaded', () => {
     multiFilterNames,
     singleFilterNames
   );
+  renderResults();
 });
