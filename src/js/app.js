@@ -270,8 +270,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   /**
    * Handles the filter form submit event.
-   * Prevents default form submission, refreshes active filter pills,
-   * highlights the selected filters, and renders results.
+   * Prevents default form submission and renders results.
    * @param {Event} event - The submit event object.
    */
   function handleFormSubmit(event) {
@@ -281,12 +280,9 @@ document.addEventListener('DOMContentLoaded', () => {
   // Listens for submit events on the main form and uses callback to update results
   filterForm.addEventListener('submit', handleFormSubmit);
 
-  // Filters selected via more filters only affect results after form is submitted
-  moreFiltersDrawer.addEventListener('submit', handleFormSubmit);
-
   /**
    * Handles drawer filter changes.
-   * Updates the drawer group summaries and refreshes the active filter pill list.
+   * Updates the drawer group summaries, active filter pills, and highlights.
    * @param {Event} event - The change event object.
    */
   function handleDrawerChange() {
@@ -303,7 +299,7 @@ document.addEventListener('DOMContentLoaded', () => {
       singleFilterNames
     );
   }
-  filterForm.addEventListener('change', handleDrawerChange);
+  filterForm.addEventListener('change', handleDrawerChange); // Kept so filter pills show before submitting form, does not trigger breed filtering/rendering
   moreFiltersDrawer.addEventListener('change', handleDrawerChange);
 
   /**
