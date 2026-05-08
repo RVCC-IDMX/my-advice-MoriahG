@@ -1,209 +1,139 @@
-# Instructions — Week 4: Fetch, serverless, and live data
+# Final project — your Groq integration
 
-**Due:** Thursday, April 16, 2026 at 5:00 PM ET
+> [!NOTE]
+> This is the first self-directed assignment in the course. Week 4 was the last guided one. From here, you write your own scope and pick your own rough edges to polish.
+>
+> **See _Suggested reading order_ at the bottom for a path through these docs.**
 
-**HAP Learning Lab companion:** [hap-fetcher.netlify.app](https://hap-fetcher.netlify.app)
+## The premise
 
-This week you replace your static data with live API data. Your views, events, and DOM code from Weeks 2-3 stay the same. The data source changes. You will write a serverless function that talks to your API, fetch that data from the browser, cache it in localStorage, and deploy the result.
+Your final project is not a new project — it is your Week 4 project with one or two Groq calls added inside the serverless function you already built. Your existing code (HTML, CSS, transform, cache wrapper, and view layer) carries over, but parts of it may need modifications depending on how you integrate Groq. The new code sits inside `netlify/functions/api.mjs` alongside your existing REST fetch.
 
-This assignment has six parts. Work through them in order.
+You shipped a working serverless transform, a safe localStorage cache, and a clean view layer in Week 4. That architectural muscle is exactly what the final builds on.
 
----
+## Three architecture patterns
 
-## Part 0 — Merge, install, and meet your new linter
+You pick one of three patterns. Read `docs/suggestions.md` first — it is a planning brief written for _your_ project specifically. It walks through how each pattern would look for your API and your data, and ends with a soft recommendation.
 
-The Week 4 PR delivers upgraded tooling (ESLint 9 + eslint-plugin-unicorn) and a working serverless function. Before you write any code, get the new tooling running.
+All three pattern walkthroughs use the **Open Library Search API** as the worked example. Its shape (rich query parameters on a single endpoint, no auth, JSON response with a list of results) is similar to most of your Week 4 APIs, so the patterns translate cleanly to whichever API your project uses. See `docs/tutorials/open-library-quickstart.md` for a one-page orientation to the API itself.
 
-1. **Read the PR description** on GitHub. It explains what is changing and why.
+### Pattern A — Groq before the REST call
 
-2. **Merge the PR.**
+User input arrives at the serverless function. Groq translates the input into the structured query parameters your existing REST API needs. The existing fetch runs against those parameters. Results render through the existing view layer.
 
-3. **Run `npm install`.** Notice the preinstall and postinstall messages in your terminal. These are npm lifecycle hooks — read `docs/tutorials/npm-lifecycle-scripts.md` to understand what just happened.
+```text
+user input (free text)
+  → Groq (returns JSON: { query, filters: {...} })
+  → existing REST fetch
+  → transform
+  → view layer (unchanged)
+```
 
-4. **Delete `.eslintrc.cjs`.** The new `eslint.config.js` replaces it. Having both files is confusing — remove the old one now. This is the upgrade the preinstall hook just warned you about.
+What it does to UX: a multi-dropdown form collapses into one input. "A 1990s science fiction novel about colonization" becomes the user's whole interaction.
 
-5. **Run `npm run lint`.** See what the new unicorn rules flag in your existing code. These are violations that Week 3's four-rule config did not catch.
+What is gained: natural-language interaction. Your project starts to feel like an assistant, not a filter.
 
-6. **Read the hook and enforcement docs:**
-   - `docs/tutorials/what-are-hooks.md` — understand the hook pattern across the whole stack (browser events, Git, npm lifecycle, serverless)
-   - `docs/tutorials/harness-engineering.md` — understand the enforcement ladder: advisory (AGENTS.md) → linting (ESLint + unicorn) → blocking (pre-commit hook). This is called **harness engineering** — the discipline of building systems that make AI-generated code reliable. You have been doing it all semester.
-   - `docs/reference/safe-dom-manipulation.md` — updated for Week 4. Your linter now blocks `innerHTML` everywhere, not just for data. Read the "security thread" section to understand why.
+Walkthrough: `docs/tutorials/pattern-a-translate-input.md` (with an Open Library worked example).
 
-7. **Fix lint violations.** Some auto-fix:
+### Pattern B — Groq after the REST call
 
-   ```bash
-   npm run lint -- --fix
-   ```
+User input runs through your existing form. Your existing fetch returns its results. Groq generates personalized commentary on top of those results. The view layer renders the commentary alongside or in place of the raw cards.
 
-   Others need manual changes. Read `docs/reference/unicorn-rules-guide.md` to understand what each rule catches and why the fix matters.
+```text
+user input (form / dropdowns)
+  → existing REST fetch
+  → transform (existing)
+  → Groq (returns JSON: { commentary, refused, refusal_reason })
+  → view layer (renders commentary)
+```
 
-8. **Log each fix in `docs/error-log.md`.**
+What it does to UX: your project gains a voice. "Here's why these three picks fit your reading mood" instead of "here are three results."
 
-9. **Update AGENTS.md.** Add async/fetch rules for the week ahead and note the new enforcement layer. Your agent needs to know about `async/await`, `try/catch`, and `response.ok` before you start writing fetch code.
+What is gained: a recommendation engine, not a search filter. The same data feels meaningfully different when narrated.
 
-10. **Test the starter function.** Run `npm run dev:api` and visit `http://localhost:8888/.netlify/functions/api` in your browser. You should see Dog API data that the serverless function returns. This function works right now — you will replace its data source in Part 1.
+Walkthrough: `docs/tutorials/pattern-b-narrate-output.md` (with an Open Library worked example).
 
-    > First time running this? See the "Running the dev server" section in `docs/tutorials/your-first-serverless-function.md` — it explains the npx prompt, the one-time `npx netlify login` step, what to expect in the terminal, and why you use `dev:api` instead of `dev`.
-    >
-    > If you completed [HAP's "Living in the Terminal" Station 3](https://hap-and-terminal.netlify.app/stations/station3/), you already have the Netlify CLI. The [Developer CLI Tools cheat sheet](https://hap-and-terminal.netlify.app/cheat-sheets/dev-tools/) has a quick reference for all the CLI tools in this project.
+### Pattern A+B — both, chained
 
-When `npm run lint` passes and the starter function returns data, you are ready for Part 1.
+Two Groq calls per user request. Groq translates the input, the REST call runs, Groq narrates the results.
 
----
+```text
+user input
+  → Groq (translate to params)
+  → existing REST fetch
+  → transform
+  → Groq (narrate the results)
+  → view layer
+```
 
-## Part 1 — Serverless proxy
+What it does to UX: the most "intelligent assistant" feel. Free-text input, narrated output, no dropdowns or filters in the middle.
 
-Replace the hardcoded Dog API data in `netlify/functions/api.mjs` with a real fetch to your project's API.
+The cost is real: doubled latency, doubled cost, doubled failure modes, doubled prompt-injection surface. Worth it when both ends of the loop genuinely benefit. Overkill when only one end has friction.
 
-1. **Read the docs:**
-   - `docs/tutorials/your-first-serverless-function.md` — how Netlify Functions work, ESM exports, `new Response()`
-   - Your API guide in `docs/api-guides/` — find the one matching your API for endpoints, response shape, and how to query it
-   - `docs/tutorials/async-await-101.md` — if async/await is new to you
+Walkthrough: `docs/tutorials/pattern-a-plus-b.md`.
 
-2. **Replace the hardcoded data.** In `netlify/functions/api.mjs`, remove the `sampleData` object and replace it with a fetch to your API.
+## The moderation floor (required)
 
-3. **Transform the response.** The serverless function is where the translation happens. Map the API's fields into the shape your views already expect. Your `views.js` should not need to change yet.
+A Groq integration adds a new attack surface — user input now flows into an LLM whose output can render arbitrary content. Every student implements four required defenses:
 
-4. **Add error handling:**
-   - Wrap the API call in `try/catch`
-   - Check `response.ok` on the upstream fetch before parsing
-   - Return a 502 status with a JSON error message on failure
+1. **System prompt** — defines the role, names the schema, forbids deviation.
+2. **Structured output (JSON mode)** — Groq returns a JSON object matching your schema; no free-text channel.
+3. **Delimited user input** — wrap input in `<user_input>...</user_input>` tags; the system prompt names them as untrusted data.
+4. **Input length cap** — reject input over 500 characters before the Groq call.
 
-5. **If your API requires a key:** Create a `.env` file in your project root with the key. Access it in the function via `process.env.YOUR_KEY_NAME`. Do not commit `.env` to Git.
+The four together are roughly 30 lines of code. None alone is enough; the combination is.
 
-6. **Test.** Run `npm run dev:api` and visit `http://localhost:8888/.netlify/functions/api` in your browser. You should see your API's data in the shape your views expect.
+See `docs/tutorials/groq-moderation-floor.md` for the full walkthrough with code, and `docs/reference/groq-prompt-injection-defenses.md` for the threat ranking and optional ceiling items.
 
-7. **Run lint and fix.** Log errors in `docs/error-log.md`.
+## What carries over from Week 4
 
----
+Most of your Week 4 code carries over with small modifications. Your REST transform stays (still mapping API data to your views shape), your `loadCache`/`saveCache` wrapper stays (likely with a different cache-key strategy), and your `views.js` `createElement` + `textContent` discipline stays (you will add a refusal renderer for `refused: true`). The form is yours: keep it for Pattern B, simplify it for Pattern A, or replace it entirely for A+B.
 
-## Part 2 — Fetch and render
+You may swap your REST API for a different one, but it is discouraged — trading a known-working integration for unknown work competes with the Groq learning, which is the point of the final.
 
-Replace `import { data } from './data.js'` with a fetch call to your serverless function.
+## Caching
 
-1. **Read the docs:**
-   - `docs/reference/fetch-cheatsheet.md` — `fetch()`, `response.ok`, `response.json()`, error patterns
-   - `docs/reference/http-status-codes.md` — why fetch does not throw on 404
+Serverless functions are stateless across invocations. Any caching has to live in the front-end (your existing localStorage wrapper). Whether your existing cache survives unchanged, evolves to handle Groq output, or gets removed because per-request narration should not be cached is your design call.
 
-2. **Write an async function** that fetches from `/.netlify/functions/api`.
+## Deadline and shipping
 
-3. **Wire the fetched data** into your existing view functions. The rendering code does not change — only where the data comes from.
+See Canvas for the final due date. The final is a one-week sprint. The Part 0 → parts → reflection cadence from Weeks 2–4 carries forward.
 
-4. **Add a loading state** so the user sees something while data loads. A simple "Loading..." message in the output container works.
+To ship:
 
-5. **Add error handling:**
-   - Wrap the fetch in `try/catch`
-   - Check `response.ok` before calling `response.json()`
-   - Show an error message in the DOM if the fetch fails — not just `console.log`
+- All work merged to `main`
+- Live site at your Netlify URL works end-to-end
+- `README.md` updated to describe the Groq integration and the env var requirement
+- `docs/reflections/final-project-reflection.md` completed
 
-6. **Test.** Run `npm run dev:api`, submit the form. Cards should render from live API data. Same look as before, different source.
+The full deliverables list is `docs/CHECKLIST.md`.
 
-7. **Run lint and fix.** Log errors in `docs/error-log.md`.
+## Suggested reading order
 
----
+Read in four phases — orientation, deep dive, references while building, wrap.
 
-## Part 3A — Enrich your views with new API data
+### Phase 1 — orientation (read before coding)
 
-Your static `data.js` was a placeholder. The real API gives you data you could not have before.
+1. **`INSTRUCTIONS.md`** (this doc) — the assignment overview.
+2. **`docs/suggestions.md`** — your personalized planning brief: how each pattern fits _your_ project, a sketched schema, a soft pick.
 
-1. **Check your API guide in `docs/api-guides/`** for enrichment candidates — fields the API provides that `data.js` did not have. Look for images, scores, previews, descriptions, or any field that would make your cards more interesting.
+### Phase 2 — deep dive (read once you have picked your pattern)
 
-2. **Choose 1-2 new fields** to add to your app.
+3. **`docs/tutorials/groq-moderation-floor.md`** — required for everyone regardless of pattern. Four layers, why all four together.
+4. **`docs/tutorials/open-library-quickstart.md`** — optional, ~5 minutes. Orients you to the API the walkthroughs use.
+5. **The walkthrough for your chosen pattern:**
+   - Pattern A → `docs/tutorials/pattern-a-translate-input.md`
+   - Pattern B → `docs/tutorials/pattern-b-narrate-output.md`
+   - Pattern A+B → read A and B first, then `docs/tutorials/pattern-a-plus-b.md`
 
-3. **Update your serverless function** to include the new field(s) in the transformed response.
+### Phase 3 — keep open while building
 
-4. **Update `views.js`** to display the new data. Add a new element in the card or detail view.
+6. **`docs/CHECKLIST.md`** — tick items as you ship them.
+7. **`docs/reference/structured-output-schemas.md`** — when designing your schema or refusal voice.
+8. **`docs/reference/groq-prompt-injection-defenses.md`** — when wrestling with refusal logic or doing the optional ceiling.
 
-5. **Add defensive rendering.** Not every item may have every field. Check before creating the DOM element:
+### Phase 4 — when done
 
-   ```js
-   if (item.imageUrl) {
-     const img = document.createElement("img");
-     img.src = item.imageUrl;
-     img.alt = item.title;
-     card.append(img);
-   }
-   ```
+9. **`docs/reflections/final-project-reflection.md`** — 7 prompts. Last thing you do before merging.
 
-6. **Test.** You should see something new in your cards or detail view that was impossible with static data.
-
-7. **Run lint and fix.** Log errors in `docs/error-log.md`.
-
----
-
-## Part 3B — Cache with localStorage
-
-Cache API responses so your app works offline and loads faster on repeat visits.
-
-1. **Read `docs/tutorials/localstorage-safe-patterns.md`.** This is the same try/catch wrapper pattern from hap-fetch Station 3, applied to your own project.
-
-2. **Write `loadCache` and `saveCache` functions** using the safe try/catch wrapper pattern. Never let a `localStorage` failure crash your app.
-
-3. **After a successful fetch, save the response** to localStorage.
-
-4. **On page load, check cache first.** Only fetch if the cache is empty or invalid.
-
-5. **Add shape validation.** Check that cached data is the shape you expect — is it an array? Does it have the right properties? Do not trust what comes out of localStorage.
-
-6. **Self-heal on bad data.** If the cache is corrupt or the wrong shape, delete the bad entry and fall back to fetching:
-
-   ```js
-   function loadCache(key) {
-     try {
-       const raw = localStorage.getItem(key);
-       if (!raw) return null;
-       const parsed = JSON.parse(raw);
-       if (!Array.isArray(parsed)) {
-         localStorage.removeItem(key);
-         return null;
-       }
-       return parsed;
-     } catch {
-       localStorage.removeItem(key);
-       return null;
-     }
-   }
-   ```
-
-7. **Test in DevTools:**
-   - First load fetches (Network tab shows the request)
-   - Refresh loads from cache (no network request)
-   - Clear localStorage in DevTools, refresh — fetches again
-   - Toggle offline mode in DevTools — app still works with cached data
-
-8. **Run lint and fix.** Log errors in `docs/error-log.md`.
-
----
-
-## Part 4 — Deploy and reflect
-
-1. **Set environment variables** (if your API requires a key). In the Netlify UI: Site settings → Environment variables. Add the same key you used in `.env`.
-
-2. **Deploy:**
-
-   ```bash
-   netlify deploy --prod
-   ```
-
-3. **Test the deployed site.** Verify data renders, error states work, and cache works. Test with a bad endpoint or offline mode to confirm error messages display.
-
-4. **Fill out `docs/my-code-map-v2-additions.md`.** Document your new files (serverless function, `.env`) and the changed data flow.
-
-5. **Complete `docs/reflections/week-4-reflection.md`.**
-
-6. **Run final lint and build:**
-
-   ```bash
-   npm run lint
-   npm run build
-   ```
-
-7. **Push to GitHub.** Confirm the Actions lint check passes.
-
----
-
-## What to submit
-
-- Your live Netlify URL
-- Your GitHub repo URL
-- A 2-3 sentence answer on Canvas: What is the enforcement ladder, and which layer changed your coding habits the most this week?
+End-to-end reading time: about 45–60 minutes. The walkthroughs are the bulk; everything else is short. The order is a suggestion — read what's useful when you need it.
