@@ -4,7 +4,8 @@ Write 2–3 sentences for each prompt. The reflection is where the learning gets
 
 ## 1. Pattern picked
 
-Which pattern did you pick — A, B, or A+B? Why? If you considered one and rejected it, name what made it not the right fit for _your_ project.
+**Which pattern did you pick — A, B, or A+B? Why? If you considered one and rejected it, name what made it not the right fit for _your_ project.**
+I picked pattern A, because I already planned on changing my dropdown selection UI after transfering to TheDogAPI because there wasn't as much of a need for the more filters dropdown selection, and pattern A most cleanly maps onto my existing filtering logic. I considered doing A+B, but for the sake of time, decided it was not the right fit.
 
 ## 2. The hardest part
 

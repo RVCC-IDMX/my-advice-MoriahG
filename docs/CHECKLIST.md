@@ -4,14 +4,14 @@ Tick each item as you ship it. Items in the **Optional ceiling** section are not
 
 ## Setup
 
-- [ ] My `GROQ_API_KEY` is stored only in my password manager and in Netlify's environment variables — never pasted into an AI chat (Copilot, Claude, ChatGPT, etc.), never written to a `.env` file as plain text, never committed to source.
-- [ ] If my key was ever exposed, I have cycled it and updated Netlify.
-- [ ] `GROQ_API_KEY` set in this project's Netlify environment variables; the deployed function returns Groq responses end-to-end.
-- [ ] Env var requirement documented in `README.md`.
+- [x] My `GROQ_API_KEY` is stored only in my password manager and in Netlify's environment variables — never pasted into an AI chat (Copilot, Claude, ChatGPT, etc.), never written to a `.env` file as plain text, never committed to source.
+- [x] If my key was ever exposed, I have cycled it and updated Netlify.
+- [x] `GROQ_API_KEY` set in this project's Netlify environment variables; the deployed function returns Groq responses end-to-end.
+- [x] Env var requirement documented in `README.md`.
 
 ## Architecture choice
 
-- [ ] Pattern picked (A, B, or A+B); reasoning written down in `docs/reflections/final-project-reflection.md`.
+- [x] Pattern picked (A, B, or A+B); reasoning written down in `docs/reflections/final-project-reflection.md`.
 
 ## Moderation floor (all four required)
 
