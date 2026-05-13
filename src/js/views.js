@@ -467,8 +467,8 @@ function showResults(items, container, displayCount = 20) {
     img.loading = 'lazy';
     // Add error handler to prevent endless loop
     img.addEventListener('error', () => {
-      if (!img.src.endsWith('/src/images/placeholder.jpg')) {
-        img.src = '/src/images/placeholder.jpg';
+      if (!img.src.endsWith('/images/placeholder.jpg')) {
+        img.src = '/images/placeholder.jpg';
         img.alt = 'No photo available for this breed';
       }
     });
@@ -577,8 +577,8 @@ function showDetail(item, container) {
   detailCard.className = 'pet-detail-card';
 
   const img = document.createElement('img');
-  img.src = item.image || '/src/images/placeholder.jpg';
-  img.alt = item.imageAlt || item.name;
+  img.src = item.image || '/images/placeholder.jpg';
+  img.alt = item.imageAlt || 'No photo available for this breed';
   img.loading = 'lazy';
 
   detailCard.append(img);

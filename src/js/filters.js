@@ -18,7 +18,7 @@ export const drawerFilters = [
   {
     label: 'Size',
     name: 'size',
-    options: ['small', 'medium', 'large', 'varied'],
+    options: ['small', 'medium', 'large'],
     type: 'multi',
   },
   /* TODO: revive in Final via Groq inference
