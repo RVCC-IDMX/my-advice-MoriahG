@@ -465,6 +465,13 @@ function showResults(items, container, displayCount = 20) {
     const img = document.createElement('img');
     img.alt = item.imageAlt || item.name;
     img.loading = 'lazy';
+    // Add error handler to prevent endless loop
+    img.addEventListener('error', () => {
+      if (!img.src.endsWith('/src/images/placeholder.jpg')) {
+        img.src = '/src/images/placeholder.jpg';
+        img.alt = 'No photo available for this breed';
+      }
+    });
     card.append(img);
     // Fetch specific image for this card
     fetchImg(item).then(() => {
@@ -570,9 +577,10 @@ function showDetail(item, container) {
   detailCard.className = 'pet-detail-card';
 
   const img = document.createElement('img');
-  img.src = item.image;
+  img.src = item.image || '/src/images/placeholder.jpg';
   img.alt = item.imageAlt || item.name;
   img.loading = 'lazy';
+
   detailCard.append(img);
 
   const petDetails = document.createElement('div');
