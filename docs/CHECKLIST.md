@@ -38,9 +38,9 @@ Tick each item as you ship it. Items in the **Optional ceiling** section are not
 
 ## Wrap
 
-- [ ] `README.md` updated to describe the Groq integration.
-- [ ] `docs/reflections/final-project-reflection.md` completed.
-- [ ] All work merged to `main` and verified live before the deadline.
+- [x] `README.md` updated to describe the Groq integration.
+- [x] `docs/reflections/final-project-reflection.md` completed.
+- [x] All work merged to `main` and verified live before the deadline.
 
 ## Optional ceiling (recommended for students with time, not required)
 
