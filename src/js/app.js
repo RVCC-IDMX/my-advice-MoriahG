@@ -1,30 +1,17 @@
 // Import data and logic modules (all local, no async)
-import {
-  filterPets,
-  drawerFilters,
-  multiFilterNames,
-  singleFilterNames,
-} from './filters.js';
+import { filterPets } from './filters.js';
 import {
   showResults,
   showNoResults,
   showDetail,
-  getFilters,
-  populateBreedSelect,
-  populateMoreFilters,
+  showRefusal,
   updateViewToggle,
-  highlightSelectedFilters,
-  renderActiveFilters,
-  clearFilterSelection,
-  getActiveFiltersData,
-  updateFilterGroupSummaries,
 } from './views.js';
 
 let lastResults = [];
 const ITEMS_PER_PAGE = 20;
 let displayCount = ITEMS_PER_PAGE;
 const CACHE_TTL_MS = 24 * 60 * 60 * 1000; // 24 hours
-let isBreedSelectPopulated = false; // Flag to track if dropdown is populated
 
 // --------- Caching functions for localStorage ---------
 
@@ -128,14 +115,11 @@ export async function fetchImg(item) {
 
 // DOM element references for all main controls and sections
 document.addEventListener('DOMContentLoaded', () => {
-  const breedSelect = document.querySelector('#breedSelect');
   const filterForm = document.querySelector('#filterForm');
-  const moreFiltersBtn = document.querySelector('#moreFiltersBtn');
-  const moreFiltersDrawer = document.querySelector('#moreFiltersDrawer');
+  const groqQueryInput = document.querySelector('#groqQuery');
   const resultsSection = document.querySelector('#resultsSection');
   const gridViewBtn = document.querySelector('#gridViewBtn');
   const listViewBtn = document.querySelector('#listViewBtn');
-  const activeFiltersContainer = document.querySelector('#activeFilters');
 
   let breeds = [];
   let isLoadingBreeds = false;
@@ -198,16 +182,6 @@ document.addEventListener('DOMContentLoaded', () => {
   // --- Event listeners for filter UI ---
 
   /**
-   * Handles toggling the More Filters drawer open/closed.
-   */
-  function handleMoreFiltersBtnClick() {
-    const expanded = moreFiltersBtn.getAttribute('aria-expanded') === 'true';
-    moreFiltersBtn.setAttribute('aria-expanded', String(!expanded));
-    moreFiltersDrawer.setAttribute('aria-hidden', String(expanded));
-  }
-  moreFiltersBtn.addEventListener('click', handleMoreFiltersBtnClick);
-
-  /**
    * Handles grid view button click: sets view to grid.
    */
   function handleGridViewBtnClick() {
@@ -228,47 +202,6 @@ document.addEventListener('DOMContentLoaded', () => {
   listViewBtn.addEventListener('click', handleListViewBtnClick);
 
   /**
-   * Renders the active filter pills in the UI.
-   */
-  function updateActiveFilters() {
-    const activeFiltersData = getActiveFiltersData({
-      breedSelect,
-      drawer: moreFiltersDrawer,
-      multiFilterNames,
-      singleFilterNames,
-    });
-    renderActiveFilters(activeFiltersData, activeFiltersContainer);
-  }
-
-  /**
-   * Removes a filter from the UI and updates the results.
-   * @param {string} key - The filter key to remove.
-   * @param {string|boolean} [value] - The filter value to remove (for multi-select).
-   */
-  function removeFilter(key, value) {
-    clearFilterSelection({
-      key,
-      value,
-      breedSelect,
-      drawer: moreFiltersDrawer,
-      multiFilterNames,
-      breedItems: breeds,
-    });
-    updateActiveFilters();
-    highlightSelectedFilters(
-      [breedSelect],
-      moreFiltersDrawer,
-      multiFilterNames,
-      singleFilterNames
-    );
-    updateFilterGroupSummaries(
-      moreFiltersDrawer,
-      multiFilterNames,
-      drawerFilters
-    );
-  }
-
-  /**
    * Handles the filter form submit event.
    * Prevents default form submission and renders results.
    * @param {Event} event - The submit event object.
@@ -277,42 +210,7 @@ document.addEventListener('DOMContentLoaded', () => {
     event.preventDefault();
     renderResults();
   }
-  // Listens for submit events on the main form and uses callback to update results
   filterForm.addEventListener('submit', handleFormSubmit);
-
-  /**
-   * Handles drawer filter changes.
-   * Updates the drawer group summaries, active filter pills, and highlights.
-   * @param {Event} event - The change event object.
-   */
-  function handleDrawerChange() {
-    updateFilterGroupSummaries(
-      moreFiltersDrawer,
-      multiFilterNames,
-      drawerFilters
-    );
-    updateActiveFilters();
-    highlightSelectedFilters(
-      [breedSelect],
-      moreFiltersDrawer,
-      multiFilterNames,
-      singleFilterNames
-    );
-  }
-  filterForm.addEventListener('change', handleDrawerChange); // Kept so filter pills show before submitting form, does not trigger breed filtering/rendering
-  moreFiltersDrawer.addEventListener('change', handleDrawerChange);
-
-  /**
-   * Handles clicks on the active filters container (removes filters).
-   * @param {Event} event - The click event.
-   */
-  function handleRemoveFiltersClick(event) {
-    const button = event.target.closest('.remove-filter');
-    if (button) {
-      removeFilter(button.dataset.key, button.dataset.value);
-    }
-  }
-  activeFiltersContainer.addEventListener('click', handleRemoveFiltersClick);
 
   /**
    * Handles clicks on pet cards to show details and its back button. Handles clicks on load more button.
@@ -351,17 +249,31 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // ------ Render views and populate dropdowns ------
 
-  // getFilters parameters
-  const viewParams = {
-    resultsSection,
-    breedSelect,
-    drawer: moreFiltersDrawer,
-    multiFilterNames,
-    singleFilterNames,
-  };
   /**
-   * Renders the current filtered pet results.
-   * Uses showResults and showNoResults from views.js as the low-level renderer.
+   * Calls the GROQ API to get filters from the user's query.
+   * @param {string} query - The user's text query.
+   * @returns {Promise<Object>} The filters object.
+   */
+  async function getGroqFilters(query) {
+    if (!query.trim()) return {};
+    try {
+      const res = await fetch('/.netlify/functions/groq', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query }),
+      });
+      if (!res.ok) throw new Error('GROQ API error');
+
+      const data = await res.json();
+      return data;
+    } catch (error) {
+      resultsSection.textContent = `Could not process your query: ${error.message}`;
+      return {};
+    }
+  }
+
+  /**
+   * Renders the current filtered pet results using GROQ query.
    */
   async function renderResults() {
     if (isLoadingBreeds) {
@@ -371,13 +283,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const allBreeds = await loadBreedsFromCacheOrFetch();
     breeds = allBreeds;
 
-    // Populate the BreedSelect dropdown only once
-    if (!isBreedSelectPopulated) {
-      populateBreedSelect(breedSelect, breeds);
-      isBreedSelectPopulated = true;
+    const query = groqQueryInput.value;
+    const groqResult = await getGroqFilters(query);
+    if (groqResult && groqResult.refused) {
+      showRefusal(resultsSection, groqResult.refusal_reason);
+      return;
     }
-
-    const filters = getFilters(viewParams);
+    // groqResult is the filter object directly
+    const filters = groqResult || {};
     const { results } = filterPets(breeds, filters);
     lastResults = Array.isArray(results) ? results : [];
 
@@ -391,15 +304,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  populateBreedSelect(breedSelect, breeds);
-  populateMoreFilters(moreFiltersDrawer, drawerFilters);
   updateViewToggle(getViewMode(), gridViewBtn, listViewBtn, resultsSection);
-  updateActiveFilters();
-  highlightSelectedFilters(
-    [breedSelect],
-    moreFiltersDrawer,
-    multiFilterNames,
-    singleFilterNames
-  );
   renderResults();
 });

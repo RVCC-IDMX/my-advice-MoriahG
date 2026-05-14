@@ -19,29 +19,16 @@
       <section class="filter-bar" aria-label="Dog filters">
         <form id="filterForm" autocomplete="off">
           <div class="filter-group">
-            <label for="breedSelect">Breed</label>
-            <select id="breedSelect" name="breed">
-              <option value="">Any</option>
-              <!-- options populated by JS -->
-            </select>
+            <label for="groqQuery">Describe your ideal dog</label>
+            <input
+              type="text"
+              id="groqQuery"
+              name="groqQuery"
+              placeholder="e.g. small, friendly"
+              autocomplete="off"
+            />
           </div>
-          <button
-            type="button"
-            id="moreFiltersBtn"
-            aria-expanded="false"
-            aria-controls="moreFiltersDrawer"
-          >
-            More Filters
-            <span class="hamburger-icon-wrapper"
-              ><img
-                src="/src/images/hamburger.svg"
-                alt="Open more filters"
-                width="20"
-                height="20"
-                class="hamburger-icon"
-            /></span>
-          </button>
-          <button class="submit-btn" type="submit">Find Pets</button>
+          <button class="submit-btn" type="submit">Find Dogs</button>
           <div
             class="view-toggle"
             role="group"
@@ -76,9 +63,6 @@
           </div>
         </form>
         <div id="activeFilters" class="active-filters" aria-live="polite"></div>
-        <aside id="moreFiltersDrawer" class="drawer" aria-hidden="true">
-          <!-- More filters populated by JS -->
-        </aside>
       </section>
     </header>
     <main id="mainContent">
