@@ -59,6 +59,46 @@ function saveCache(key, data) {
   }
 }
 
+// --------- Breed enrichment with Groq inference (on-demand) ---------
+
+/**
+ * Infers properties for a single breed via Groq API and caches the result.
+ * Returns an object with inferred properties, or an empty object if inference fails.
+ * @param {Object} breed - The breed object with name, temperament, breedGroup, size.
+ * @returns {Promise<Object>} Inferred properties (cost, habitat, care, goodWithChildren, goodWithOtherPets) or empty object on failure.
+ */
+export async function enrichBreed(breed) {
+  try {
+    const cacheKey = `breedInference_${breed.id}`;
+
+    // Check if inferred properties are already cached
+    const cached = loadCache(cacheKey);
+    if (cached) {
+      return cached;
+    }
+
+    const res = await fetch('/.netlify/functions/infer', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ breed }),
+    });
+
+    if (!res.ok) {
+      return {}; // Gracefully skip inference on HTTP error
+    }
+
+    const inferred = await res.json();
+    if (inferred && inferred.inferred === true) {
+      saveCache(cacheKey, inferred);
+      return inferred;
+    }
+    return {};
+  } catch {
+    // Network error or parse error — gracefully skip
+    return {};
+  }
+}
+
 // --------- Image API fetching with caching  ---------
 
 /**
@@ -80,7 +120,6 @@ export async function fetchImg(item) {
     }
 
     if (noPhotoCache.includes(item.id)) {
-      //console.warn(`Skipping fetch for breed ${item.id} (no photo available)`);
       return;
     }
 
@@ -109,7 +148,7 @@ export async function fetchImg(item) {
       }
     }
   } catch {
-    //console.error('Image fetch failed:', error);
+    // Silently fail on fetch or parse errors
   }
 }
 
@@ -216,7 +255,7 @@ document.addEventListener('DOMContentLoaded', () => {
    * Handles clicks on pet cards to show details and its back button. Handles clicks on load more button.
    * @param {Event} event - The click event.
    */
-  function handleCardClick(event) {
+  async function handleCardClick(event) {
     // Load more button
     if (event.target.closest('.load-more-btn')) {
       displayCount += ITEMS_PER_PAGE;
@@ -242,8 +281,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const itemId = card.dataset.id;
     const item = breeds.find((breed) => breed.id === itemId);
 
-    // call showDetail(item, container)
-    showDetail(item, resultsSection);
+    // call showDetail(item, container) and await it
+    await showDetail(item, resultsSection);
   }
   resultsSection.addEventListener('click', handleCardClick);
 

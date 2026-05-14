@@ -1,165 +1,3 @@
-// Numeric range matcher (kept for future use)
-/*
-function matchesRange(valueRange, filterRange) {
-  if (!Array.isArray(filterRange) || isEmptyFilter(filterRange)) return true;
-  if (!Array.isArray(valueRange)) return true;
-
-  const [min, max] = valueRange;
-  const [fmin, fmax] = filterRange;
-
-  if (fmin != null && max < fmin) return false;
-  if (fmax != null && min > fmax) return false;
-  return true;
-}
-*/
-
-// Configuration for all filters shown in the "More Filters" drawer
-export const drawerFilters = [
-  {
-    label: 'Size',
-    name: 'size',
-    options: ['small', 'medium', 'large'],
-    type: 'multi',
-  },
-  {
-    label: 'Origin',
-    name: 'origin',
-    type: 'single',
-    options: [], // Will be populated dynamically or via UI
-  },
-  {
-    label: 'Breed Group',
-    name: 'breedGroup',
-    type: 'single',
-    options: [], // Will be populated dynamically or via UI
-  },
-  /* TODO: revive in Final via Groq inference
-  {
-    label: 'Housing',
-    name: 'housing',
-    options: [
-      'apartment',
-      'house',
-      'farm',
-      'enclosure',
-      'terrarium',
-      'aquarium',
-      'cage',
-    ],
-    type: 'multi',
-  },
-  {
-    label: 'Space',
-    name: 'space',
-    options: ['small', 'medium', 'large', 'varied'],
-    type: 'multi',
-  },
-  {
-    label: 'Climate',
-    name: 'climate',
-    options: ['cold', 'temperate', 'warm', 'humid', 'hot', 'varied'],
-    type: 'multi',
-  },
-  {
-    label: 'Social Needs',
-    name: 'social',
-    options: ['solitary', 'independent', 'social', 'highlySocial', 'varied'],
-    type: 'multi',
-  },
-  {
-    label: 'Grooming',
-    name: 'grooming',
-    options: ['none', 'low', 'moderate', 'high', 'varied'],
-    type: 'multi',
-  },
-  {
-    label: 'Exercise',
-    name: 'exercise',
-    options: ['low', 'moderate', 'high', 'veryHigh', 'varied'],
-    type: 'multi',
-  },
-  {
-    label: 'Training',
-    name: 'training',
-    options: ['easy', 'moderate', 'difficult', 'varied'],
-    type: 'multi',
-  },
-  */
-  {
-    label: 'Temperament',
-    name: 'temperament',
-    options: [
-      'friendly',
-      'loyal',
-      'alert',
-      'intelligent',
-      'curious',
-      'affectionate',
-      'energetic',
-      'playful',
-      'gentle',
-      'confident',
-      'courageous',
-      'adaptable',
-      'calm',
-      'devoted',
-      'outgoing',
-      'eager to please',
-    ],
-    type: 'multi',
-  },
-  {
-    label: 'Life Span (years)',
-    name: 'lifeSpan',
-    type: 'single',
-    options: [
-      { label: '1-3 years', value: '1-3' },
-      { label: '4-7 years', value: '4-7' },
-      { label: '8-15 years', value: '8-15' },
-      { label: '16+ years', value: '16+' },
-    ],
-  },
-  /* TODO: revive in Final via Groq inference
-  {
-    label: 'Cost ($)',
-    name: 'cost',
-    type: 'single',
-    options: [
-      { label: '<$100', value: '<100' },
-      { label: '$100–$500', value: '100-500' },
-      { label: '$501–$2000', value: '501-2000' },
-      { label: '$2001+', value: '2001+' },
-    ],
-  },
-  {
-    label: 'Good with Children',
-    name: 'goodWithChildren',
-    options: [
-      { label: 'Yes', value: true },
-      { label: 'No', value: false },
-    ],
-    type: 'single',
-  },
-  {
-    label: 'Good with Other Pets',
-    name: 'goodWithOtherPets',
-    options: [
-      { label: 'Yes', value: true },
-      { label: 'No', value: false },
-    ],
-    type: 'single',
-  },
-  */
-];
-
-// Arrays of filter names by type for easy iteration
-export const multiFilterNames = drawerFilters
-  .filter((f) => f.type === 'multi')
-  .map((f) => f.name);
-export const singleFilterNames = drawerFilters
-  .filter((f) => f.type === 'single')
-  .map((f) => f.name);
-
 /**
  * Checks if a filter value is empty (for all filter types).
  * @param {*} value - The filter value to check.
@@ -209,6 +47,12 @@ function matchesFilter(value, filter, filterKey) {
  * @param {Array<number>} filterRange - The [min, max] value range from the filter (GROQ).
  * @returns {boolean} True if the ranges overlap or filter is empty/null.
  */
+/**
+ * Checks if two numeric ranges overlap (for [min, max] arrays).
+ * @param {Array<number>} valueRange - The [min, max] value range from the breed.
+ * @param {Array<number>} filterRange - The [min, max] value range from the filter (GROQ).
+ * @returns {boolean} True if the ranges overlap or filter is empty/null.
+ */
 function matchesRangeOverlap(valueRange, filterRange) {
   if (isEmptyFilter(filterRange)) return true;
   if (!Array.isArray(valueRange) || !Array.isArray(filterRange)) return false;
@@ -231,18 +75,16 @@ function matchesRangeOverlap(valueRange, filterRange) {
   return max >= fmin && min <= fmax;
 }
 
-/** TODO: revive in Final via Groq inference
- * Checks if a value matches a user preference (for boolean/single values).
- * @param {*} value - The value to check.
- * @param {*} preference - The user preference to match.
- * @returns {boolean} True if the value matches the preference.
+/**
+ * Checks if a boolean value matches a filter (for goodWithChildren, goodWithOtherPets).
+ * @param {*} value - The boolean value to check.
+ * @param {*} filter - The boolean filter to match against.
+ * @returns {boolean} True if the value matches or filter is empty.
  */
-/*
-function matchesPreference(value, preference) {
-  if (preference === undefined) return true;
-  return value === null || value === preference;
+function matchesBooleanFilter(value, filter) {
+  if (isEmptyFilter(filter)) return true;
+  return value === filter;
 }
-*/
 
 const commonFilterDescriptors = [
   {
@@ -271,35 +113,9 @@ const commonFilterDescriptors = [
     filterKey: 'breedGroup',
     matcher: matchesFilter,
   },
-  /* TODO: revive in Final via Groq inference
-  {
-    getValue: (item) => item.cost?.initial,
-    filterKey: 'cost',
-    matcher: matchesDropdownRange,
-  },
   {
     getValue: (item) => item.habitat?.housing,
     filterKey: 'housing',
-    matcher: matchesFilter,
-  },
-  {
-    getValue: (item) => item.habitat?.space,
-    filterKey: 'space',
-    matcher: matchesFilter,
-  },
-  {
-    getValue: (item) => item.habitat?.climate,
-    filterKey: 'climate',
-    matcher: matchesFilter,
-  },
-  {
-    getValue: (item) => item.care?.social,
-    filterKey: 'social',
-    matcher: matchesFilter,
-  },
-  {
-    getValue: (item) => item.care?.grooming,
-    filterKey: 'grooming',
     matcher: matchesFilter,
   },
   {
@@ -308,21 +124,15 @@ const commonFilterDescriptors = [
     matcher: matchesFilter,
   },
   {
-    getValue: (item) => item.care?.training,
-    filterKey: 'training',
-    matcher: matchesFilter,
-  },
-  {
     getValue: (item) => item.goodWithChildren,
     filterKey: 'goodWithChildren',
-    matcher: matchesPreference,
+    matcher: matchesBooleanFilter,
   },
   {
     getValue: (item) => item.goodWithOtherPets,
     filterKey: 'goodWithOtherPets',
-    matcher: matchesPreference,
+    matcher: matchesBooleanFilter,
   },
-  */
 ];
 
 /**
@@ -385,19 +195,6 @@ function formatArray(value) {
   return filtered.length ? filtered.join(', ') : 'Varied';
 }
 
-/** TODO: revive in Final via Groq inference
- * Formats a boolean-like value to Yes / No / Varied.
- * @param {*} value - The value to format.
- * @returns {string} 'Yes', 'No', or 'Varied'.
- */
-/*
-function formatBooleanVaried(value) {
-  if (value === true) return 'Yes';
-  if (value === false) return 'No';
-  return 'Varied';
-}
-*/
-
 /**
  * Formats a numeric range array to a display string.
  * @param {*} range - The range array.
@@ -438,51 +235,48 @@ function formatTemperament(temperament) {
   return formatArray(temperament);
 }
 
-/* TODO: revive in Final via Groq inference
-function formatCost(cost) {
-  if (!cost || typeof cost !== 'object') return 'Unknown';
-  const formatRange = (range) =>
-    Array.isArray(range) && range.length === 2
-      ? `$${range[0]}–$${range[1]}`
-      : 'Unknown';
-
-  return `Initial ${formatRange(cost.initial)}, Adoption ${formatRange(
-    cost.adoption
-  )}, Monthly ${formatRange(cost.monthly)}`;
+/**
+ * Format monthly cost for display.
+ * @param {*} cost - Cost object with monthly property
+ * @returns {string} Formatted cost string (e.g. "$75/month")
+ */
+function formatMonthlyCost(cost) {
+  if (!cost || typeof cost !== 'object' || typeof cost.monthly !== 'number') {
+    return 'Unknown';
+  }
+  return `$${cost.monthly}/month`;
 }
 
-function formatHabitat(habitat) {
-  if (!habitat || typeof habitat !== 'object') return 'Unknown';
-
-  const housing =
-    Array.isArray(habitat.housing) && habitat.housing.length
-      ? habitat.housing.join(', ')
-      : 'Varied';
-  const space = formatString(habitat.space) || 'Varied';
-  const climate =
-    Array.isArray(habitat.climate) && habitat.climate.length
-      ? habitat.climate.join(', ')
-      : 'Varied';
-
-  return `Housing: ${housing}; Space: ${space}; Climate: ${climate}`;
+/**
+ * Format housing preference for display.
+ * @param {*} housing - Housing string (apartment, house, farm)
+ * @returns {string} Formatted housing string
+ */
+function formatHousing(housing) {
+  if (!housing) return 'Unknown';
+  return formatString(housing, true);
 }
 
-function formatCare(care) {
-  if (!care || typeof care !== 'object') return 'Unknown';
-
-  return `Social: ${formatString(care.social, true)}, Grooming: ${formatString(
-    care.grooming,
-    true
-  )}, Exercise: ${formatString(care.exercise, true)}, Training: ${formatString(
-    care.training,
-    true
-  )}`;
+/**
+ * Format exercise level for display.
+ * @param {*} exercise - Exercise level (low, moderate, high, veryHigh)
+ * @returns {string} Formatted exercise string
+ */
+function formatExercise(exercise) {
+  if (!exercise) return 'Unknown';
+  return formatString(exercise, true);
 }
 
-function formatGoodWith(value) {
-  return formatBooleanVaried(value);
+/**
+ * Format boolean value as Yes/No for display.
+ * @param {*} value - Boolean value
+ * @returns {string} 'Yes', 'No', or 'Unknown'
+ */
+function formatBoolean(value) {
+  if (value === true) return 'Yes';
+  if (value === false) return 'No';
+  return 'Unknown';
 }
-*/
 
 /**
  * Formats a pet item for display in the views.
@@ -498,13 +292,11 @@ export function formatPetForDisplay(item) {
     temperament: formatTemperament(item.temperament),
     origin: formatString(item.origin, true),
     breedGroup: formatString(item.breedGroup, true),
-    /* TODO: revive in Final via Groq inference
-    cost: formatCost(item.cost),
-    habitat: formatHabitat(item.habitat),
-    care: formatCare(item.care),
-    goodWithChildren: formatGoodWith(item.goodWithChildren),
-    goodWithOtherPets: formatGoodWith(item.goodWithOtherPets),
-    */
+    monthlyCost: formatMonthlyCost(item.cost),
+    housing: formatHousing(item.habitat?.housing),
+    exercise: formatExercise(item.care?.exercise),
+    goodWithChildren: formatBoolean(item.goodWithChildren),
+    goodWithOtherPets: formatBoolean(item.goodWithOtherPets),
   };
 }
 

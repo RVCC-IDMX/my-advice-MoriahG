@@ -1,5 +1,5 @@
 import { formatPetForDisplay } from './filters.js';
-import { fetchImg } from './app.js';
+import { fetchImg, enrichBreed } from './app.js';
 
 /**
  * Updates the view toggle buttons and results section based on the selected mode.
@@ -137,16 +137,30 @@ function showNoResults(container) {
 
 // Detail view
 /**
- * Render a detail view for a single item into the provided container.
- * @param {Object} item - The item (breed) to display. Expected fields: `image`, `imageAlt`, `name`, etc.
- * @param {HTMLElement} container - The container element where the detail view will be rendered.
- * @returns {void}
+ * Displays detail view for a single pet breed, fetching inferred properties on-demand.
+ * @param {Object} item - The breed object.
+ * @param {HTMLElement} container - The DOM element where the detail will be rendered.
+ * @returns {Promise<void>} Resolves once detail is rendered.
  */
-function showDetail(item, container) {
-  // Show this view
+async function showDetail(item, container) {
+  // Show this view with loading state
   container.classList.remove('hidden');
+  container.textContent = '';
 
-  // Build the content
+  // Show loading message while inferring
+  const loadingMsg = document.createElement('div');
+  loadingMsg.className = 'loading-message';
+  loadingMsg.textContent = `Loading details for ${item.name}...`;
+  container.append(loadingMsg);
+
+  // Infer properties on-demand if not already present
+  if (!item.cost || !item.habitat || !item.care) {
+    const inferred = await enrichBreed(item);
+    // Merge inferred properties into the item
+    Object.assign(item, inferred);
+  }
+
+  // Clear loading state and render details
   container.textContent = '';
   const detailCard = document.createElement('article');
   detailCard.className = 'pet-detail-card';
@@ -177,13 +191,12 @@ function showDetail(item, container) {
     ['Temperament:', display.temperament],
     ['Origin:', display.origin],
     ['Breed Group:', display.breedGroup],
-    /* TODO: revive in Final via Groq inference
-    ['Cost:', display.cost],
-    ['Habitat:', display.habitat],
-    ['Care:', display.care],
+    ['Below are AI inferred values, may not be accurate:'],
+    ['Cost:', display.monthlyCost],
+    ['Housing:', display.housing],
+    ['Exercise:', display.exercise],
     ['Good with children:', display.goodWithChildren],
     ['Good with other pets:', display.goodWithOtherPets],
-    */
   ];
 
   petDetails.append(titleRow);

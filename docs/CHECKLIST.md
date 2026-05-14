@@ -33,8 +33,8 @@ Tick each item as you ship it. Items in the **Optional ceiling** section are not
 
 ## Polish
 
-- [ ] At least one UX rough edge identified and smoothed (loading state, error state, refusal rendering, layout, copy, accessibility).
-- [ ] Live site at your Netlify URL works end-to-end after deploy.
+- [x] At least one UX rough edge identified and smoothed (loading state, error state, refusal rendering, layout, copy, accessibility).
+- [x] Live site at your Netlify URL works end-to-end after deploy.
 
 ## Wrap
 
