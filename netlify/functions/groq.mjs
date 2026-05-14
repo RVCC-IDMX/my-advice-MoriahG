@@ -19,7 +19,8 @@ Return only the JSON object matching this schema, values vary:
 }
 
 Only set "refused": true if the input is completely ambiguous, nonsensical, or cannot be mapped to any part of the schema. 
-Otherwise, set "refused": false and fill in each value in its respective field.
+Otherwise, set "refused": false and fill in each value in its respective field. 
+The first number in "lifeSpan" is the min and the second is the max.
 `;
 
 const MAX_INPUT = 500;

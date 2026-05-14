@@ -21,6 +21,18 @@ export const drawerFilters = [
     options: ['small', 'medium', 'large'],
     type: 'multi',
   },
+  {
+    label: 'Origin',
+    name: 'origin',
+    type: 'single',
+    options: [], // Will be populated dynamically or via UI
+  },
+  {
+    label: 'Breed Group',
+    name: 'breedGroup',
+    type: 'single',
+    options: [], // Will be populated dynamically or via UI
+  },
   /* TODO: revive in Final via Groq inference
   {
     label: 'Housing',
@@ -168,42 +180,55 @@ function isEmptyFilter(value) {
  * @param {*} filter - The filter to match against.
  * @returns {boolean} True if the value matches the filter.
  */
-function matchesFilter(value, filter) {
+/**
+ * Checks if a value matches a filter (for multi/single values).
+ * For the 'name' filter, performs a case-insensitive comparison.
+ * @param {*} value - The value to check.
+ * @param {*} filter - The filter to match against.
+ * @param {string} [filterKey] - The key of the filter (optional, used for special cases).
+ * @returns {boolean} True if the value matches the filter.
+ */
+function matchesFilter(value, filter, filterKey) {
   if (isEmptyFilter(filter)) return true;
   if (Array.isArray(filter))
-    return filter.some((item) => matchesFilter(value, item));
+    return filter.some((item) => matchesFilter(value, item, filterKey));
   if (Array.isArray(value)) {
     return value.includes('varied') || value.includes(filter);
   }
   if (value === 'varied' || value === null) return true;
+  // Case-insensitive substring match for 'name' filter
+  if (filterKey === 'name') {
+    return String(value).toLowerCase().includes(String(filter).toLowerCase());
+  }
   return String(value) === String(filter);
 }
 
 /**
- * Checks if a numeric value range matches a dropdown filter string.
- * @param {Array<number>} valueRange - The [min, max] value range.
- * @param {string} filterString - The dropdown filter string.
- * @returns {boolean} True if the value range matches the filter.
+ * Checks if two numeric ranges overlap (for [min, max] arrays).
+ * @param {Array<number>} valueRange - The [min, max] value range from the breed.
+ * @param {Array<number>} filterRange - The [min, max] value range from the filter (GROQ).
+ * @returns {boolean} True if the ranges overlap or filter is empty/null.
  */
-function matchesDropdownRange(valueRange, filterString) {
-  if (isEmptyFilter(filterString)) return true;
-  if (!Array.isArray(valueRange)) return false;
-  const [min, max] = valueRange;
-  if (typeof min !== 'number' || typeof max !== 'number') return true;
+function matchesRangeOverlap(valueRange, filterRange) {
+  if (isEmptyFilter(filterRange)) return true;
+  if (!Array.isArray(valueRange) || !Array.isArray(filterRange)) return false;
+  let [min, max] = valueRange;
+  let [fmin, fmax] = filterRange;
 
-  // Life span (both min and max must fit in range)
-  if (filterString === '1-3') return min >= 1 && max <= 3;
-  if (filterString === '4-7') return min >= 4 && max <= 7;
-  if (filterString === '8-15') return min >= 8 && max <= 15;
-  if (filterString === '16+') return min >= 16;
+  // If filter is [null, null], treat as unbounded (match all)
+  if (fmin == null && fmax == null) return true;
 
-  // Cost (both min and max must fit in range)
-  if (filterString === '<100') return min < 100 && max < 100;
-  if (filterString === '100-500') return min >= 100 && max <= 500;
-  if (filterString === '501-2000') return min >= 501 && max <= 2000;
-  if (filterString === '2001+') return min >= 2001;
+  // If breed data is missing, do not match
+  if (min == null || max == null) return false;
 
-  return true;
+  // Convert to numbers if possible
+  min = Number(min);
+  max = Number(max);
+  fmin = fmin == null ? -Infinity : Number(fmin);
+  fmax = fmax == null ? Infinity : Number(fmax);
+
+  // Overlap: breed's max >= filter min AND breed's min <= filter max
+  return max >= fmin && min <= fmax;
 }
 
 /** TODO: revive in Final via Groq inference
@@ -220,6 +245,11 @@ function matchesPreference(value, preference) {
 */
 
 const commonFilterDescriptors = [
+  {
+    getValue: (item) => item.name,
+    filterKey: 'name',
+    matcher: (value, filter) => matchesFilter(value, filter, 'name'),
+  },
   { getValue: (item) => item.size, filterKey: 'size', matcher: matchesFilter },
   {
     getValue: (item) => item.temperament,
@@ -229,7 +259,17 @@ const commonFilterDescriptors = [
   {
     getValue: (item) => item.lifeSpan,
     filterKey: 'lifeSpan',
-    matcher: matchesDropdownRange,
+    matcher: matchesRangeOverlap,
+  },
+  {
+    getValue: (item) => item.origin,
+    filterKey: 'origin',
+    matcher: matchesFilter,
+  },
+  {
+    getValue: (item) => item.breedGroup,
+    filterKey: 'breedGroup',
+    matcher: matchesFilter,
   },
   /* TODO: revive in Final via Groq inference
   {
